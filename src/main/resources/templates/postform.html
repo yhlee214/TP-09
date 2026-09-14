@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=29b3650196f8fedd2d1e247efd58ae3f&libraries=services"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<meta charset="UTF-8">
+<title>포스트 에딧 폼</title>
+</head>
+<body>
+<form id ="post_form" method="post" th:action="@{/post/write}" enctype = "multipart/form-data">
+<div>
+    <label for="title">제목</label>
+    <input type="text" id="title" name="title" placeholder="예: 휴지 공동구매합니다">
+</div>
+<div>
+    <label for="itemName">물품명</label>
+    <input type="text" id="itemName" name="itemName">
+</div>
+
+<div>
+    <label for="itemImage">이미지 업로드</label>
+    <input type="file" id="itemImage" name="itemImage" accept="image/*">
+</div>
+
+
+<div>
+    <label for="totalItem">총 수량</label>
+    <input type="number" id="totalItem" name="totalItem" min="1">
+</div>
+<div>
+    <label for="price">개당 가격</label>
+    <input type="number" id="price" name="price" min="0">
+</div>
+<div>
+    <label for="deadline">마감일</label>
+    <input type="date" id="deadline" name="deadline">
+</div>
+<div>
+    <label for="splitDate">나눔 일시</label>
+    <input type="datetime-local" id="splitDate" name="splitDate">
+</div>
+<div>
+	<label for ="tradeplace">거래 장소</label>
+	<input type ="text" id ="keword" placeholder ="장소나 주소를 입력하세요">
+	<button type = "button" id ="search_place" name = "search_place">검색</button>
+</div>
+
+<ul id="place_list"></ul>
+
+<input type="hidden" name="placeName" id="placeName"> <!-- 형태를 숨겨주며 입력한 값이 여기에 넣어짐. -->
+<input type="hidden" name="address" id="address">
+<input type="hidden" name="lat" id="lat">
+<input type="hidden" name="lng" id="lng">
+
+<div id="map" style="width:100%; height:350px;"></div>
+
+<div> 
+	<label for="detail">기타 내용</label>
+	<textarea id="detail" name="detail"></textarea>
+</div>
+
+<div>
+	<label for = "gongusignup">1인당 최대 구매 개수</label>
+	<input type="number" id="maxPerPerson" name="maxPerPerson" min="1" value="1">
+</div>
+
+<button type="submit">등록하기</button>
+</form>
+
+<script type="text/javascript">
+
+let map, marker, ps;
+
+$(function() {
+    let mapContainer = document.getElementById('map'); // 지도 를 담아주는 변수 입니다. document.getElementById('map')를 통해 가져옵니다.
+    map = new kakao.maps.Map(mapContainer, { // 맵 변수 안에 카카오 맵스 인터페이스 혹은 클래스 안에 맵이라는 함수를 통해 사용합니다, 이 함수 안에는 지도 그림을 담아둘 매게변수와 옵션을 요구합니다.
+       center: new kakao.maps.LatLng(37.4954, 126.8874), // 지도에 중앙을 보여줍니다. 위치는 구로구청 이며, 이는 초기세팅 값입니다.
+       level: 3 // 지도의 확대 레벨을 설정합니다. 숫자가 클수록 지도가 축소됩니다}
+    });
+    ps = new kakao.maps.services.Places(); // 장소를 찾을수 있는 객체를 만들고 변수에 담아줍니다.
+
+    $('#search_place').click(searchPlace); // 검색 버튼을 누르면 searchPlace 함수 실행.
+    $('#keword').keydown(function(e) { // 장소나 주소를 입력하면 funtion(e)가 실행 여기서 e는 이벤트를 의미.
+       if(e.key === "Enter") { // 만약 이벤트 키(e.key)가 엔터라면 
+       e.preventDefault(); searchPlace(); //  e.preventDefault(); : 기본 이벤트(서브밋을 누른다면 새로고침 되는 함수를 막습니다.) , searchPlace(); : 장소를 찾는 함수를 실행합니다.
+       }
+});
+       });
+
+       function searchPlace() { // 장소를 검색하는 함수
+            let keword = $('#keword').val().trim(); // 입력한 키워드의 값을 가져와 양 끝에 공백을 제거함.
+            if(keword === "") { //만약 키워드 값이 비워있다면
+                alert("장소를 입력하세요."); // 경고창을 띄우고
+                return; // 함수 종료
+            }
+        
+
+     ps.keywordSearch(keword, function(data, status) {
+        // ps keywordSearch : 장소를 검색하는 함수 , searchPlace() 함수 와 다른 점은 ps안에 만들어진 keywordSearch 함수(카카오가 제공하는 함수)를 사용한다는 점입니다. 이 함수는 두개의 매개변수를 요구합니다. 첫번째는 검색할 키워드, 두번째는 콜백함수입니다. 콜백함수는 검색이 끝난 후 실행되는 함수입니다. 이 함수 안에는 data와 status라는 매개변수가 있습니다. data는 검색결과를 담고 있는 배열이고, status는 검색결과 상태를 담고 있는 변수입니다.
+        // searhPlace()의 함수 안에 있는 함수 이며, 키워드에서 입력받은 값을 가져와 검색을 진행합니다.
+        //data : 검색결과를 담고 있는 매게변수 이며, status : 검색 결과 상태를 담고 있습니다.
+     
+        if (status !== kakao.maps.services.Status.OK) {
+
+        $("#place_list").html("<li>검색 결과가 존재하지 않습니다.</li>")
+                return; 
+             //  존재하지 않을때 이 문구를 html에 기입함
+         // 검색결과가 안나온다면 OK 상태가 아니라면
+        }
+        let html = ""; // 빈 html 변수를 만듬.
+
+        data.forEach(function(place) { // data 배열 안에 있는 place 변수를 하나식 꺼내서 html 변수에 넣어줌 이때 html은 그냥 문자열임.
+            html += '<li class= "place_item"'  // li 태그를 만들고 이 클래스는 place_item입니다.
+            + ' data-place-name="' + place.place_name + '"'  // data-place-name : 장소 이름을 담는 속성
+            + ' data-address="' + place.road_address_name + '"' //  도로명 주소를 담아줍니다
+            + ' data-lat="' + place.y + '"' // 위도 좌표를 담아줍니다 밑에랑 마찬가지 이유 남북 방향의 수평위치
+            + ' data-lng="' + place.x + '"' // 경도 좌표를 담아줍니다  이거 경도인 이유는 측지에서는 x축을 경도로 잡아줌)동서 방향의 수평위치)
+            + '>' + place.place_name + '</li>'; // li 태그 안에 장소 이름을 넣어줍니다 li 태그는 <ul id="place_list"></ul> 기 안에 들어가게 됩니다.
+        });
+        $("#place_list").html(html); // id place_list 에 html 위에거를 넣어줍니다.
+    });
+}
+
+$(document).on("click", ".place_item", function() { // place_item 클래스를 가진 객체를 클릭하면 실행됩니다. 이벤트 위임 방식이며, $(선택자).click을 사용하지 않는 이유는 
+    // 위에 내용은 우선적으로는 비어있는 객체이고 html 이후에 만들어 집니다. 페이지 로딩 시점에는 비어있습니다. 만약 바뀌는 순간 순간 적용해줘야 하기 때문입니다. 그렇게 안하면 새로고침을 해줘야 하는데 그러면 위 데이터가 다 날라갑니다.
+
+    let name = $(this).data("place-name"); // 클릭한 객체의 data-place-name 속성에 있는 값을 가져옵니다.
+    let addr = $(this).data("address"); 
+    let lat = $(this).data("lat"); 
+    let lng = $(this).data("lng"); 
+
+
+    $("#placeName").val(name); // 숨겨진 input 태그에 값을 넣어줍니다. 이때 val(name)은 값에다가 name를 넣어주는 의미입니다.
+    $("#address").val(addr);
+    $("#lat").val(lat);
+    $("#lng").val(lng);
+
+    let pos = new kakao.maps.LatLng(lat, lng); // 위도와 경도를 통해 카카오 지도에 위치를 표시합니다.
+    if (marker){
+        marker.setMap(null); // 기존에 마커가 있다면 제거합니다. 이유는 이는 새롭게 쓰는 글이기 때문입니다.
+    }
+    marker = new kakao.maps.Marker({ // 마커를 새롭게 생성합니다.
+        position : pos, // 마커의 위치를 pos설정합니다
+        map : map // 마커를 지도에 표시하기 위해 설정합니다 
+        })
+      map.setCenter(pos); // 우리가 검색한 결과의 장소를 지도 중앙으로 설정합니다
+      $("#keword").val(""); // 검색창에 있는 걸 비워줍
+})
+
+$('#post_form').submit(function(e) { // 폼을 제출할때 하나라도 바워있다면 막는 함수입니다.
+    if(!$('#title').val().trim()) {
+        e.preventDefault();
+        alert('제목을 입력해주세요.');
+        return false;
+    }
+
+        if(!$('#itemName').val().trim()) {
+        e.preventDefault();
+        alert('물품명을 입력해주세요.');
+        return false;
+    }
+    if(!$('#totalItem').val().trim()) {
+        e.preventDefault();
+        alert('총 수량을 입력해주세요.');
+        return false;
+    }
+    if(!$('#price').val().trim()) {
+        e.preventDefault();
+        alert('개당 가격을 입력해주세요.');
+        return false;
+    }
+
+    if(!$('#deadline').val()) {
+        e.preventDefault();
+        alert('마감일을 입력해주세요.');
+        return false;
+    }
+
+    if(!$('#placeName').val().trim() || !$('#address').val().trim() || !$('#lat').val().trim() || !$('#lng').val().trim()) {
+        e.preventDefault();
+        alert('거래 장소를 선택해주세요.');
+        return false;
+    }
+})
+
+</script>
+
+</body>
+
+
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=29b3650196f8fedd2d1e247efd58ae3f&libraries=services"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<meta charset="UTF-8">
+<title>메인 화면(리스트)</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="header">
+
+    <div class="top_left_menu">
+        <span class="logo">동네공구</span>
+    </div>
+
+    <div class="top_center_menu">
+        <button type="button" id="Location_services">
+            <span id="current_region" th:text="${selectedGu} != null ? ${selectedGu} + ' ' + ${selectedDong} : '내 지역 선택'">내 지역 선택</span>
+        </button>
+    </div>
+
+    <div class="top_right_menu">
+        <input type="button" id="myPage" name="myPage" value="마이페이지" th:onclick="|location.href='@{/mypage}'|">
+        <button type="button" id="alarm" name="alarm">
+            알림<span id="alarm_count">0</span>
+        </button>
+        <input type="button" id="logout" name="logout" value="로그아웃" th:onclick="|location.href='@{/logout}'|">
+    </div>
+
+</div>
+
+<!-- 글 카드 리스트 -->
+<div class="post_card_list" th:href="@{/post/post(postId=${post.postId})}">
+    <a class="post_card" th:each="post : ${postlist}" >
+        <div class="post_card_top_center">
+            <p th:text="${post.postId}">글 번호</p>
+            <h3 th:text="${post.title}">제목</h3>
+            <p th:text="${post.writer}">작성자</p>
+            <p th:text="${post.createdDate}">작성일</p>
+        </div>
+        <div class="post_card_top_right">
+            <img th:src="${post.img}" alt="상품 이미지">
+        </div>
+        <div class="post_card_center">
+            <p th:text="${post.itemname}">물품명</p>
+            <p>[[${post.buyitem}]] / [[${post.totalitem}]]</p>
+            <p th:text="${post.price}">개당 가격</p>
+        </div>
+
+    </a>
+</div>
+
+<!-- 지역 선택 모달 -->
+<div id="region_modal" style="display:none;">
+    <select id="gu">
+        <option value="">구 선택</option>
+        <option value="구로구">구로구</option>
+    </select>
+    <select id="dong">
+        <option value="">동 선택</option>
+    </select>
+    <button type="button" id="use_gps">현재 위치 선택</button>
+    <button type="button" id="region_apply">선택 완료</button>
+    <button type="button" id="modal_close">닫기</button>
+</div>
+
+<!-- 알림 모달 (카드 리스트) -->
+<div id="alarm_modal" style="display:none;">
+    <div class="alarm_card_list" id="alarm_card_list">
+        <p>불러오는 중...</p>
+    </div>
+    <button type="button" id="alarm_read_all">모두 읽음</button>
+    <button type="button" id="alarm_close">닫기</button>
+</div>
+
+<!-- 글쓰기 버튼 (화면 우하단에 떠 있음) -->
+<input type="button" id="Post" name="Post" value="글쓰기" th:onclick="|location.href='@{/Postform}'|">
+
+<script type="text/javascript">
+// 구별 동 목록 (행정동 기준 — 카카오 coord2RegionCode 의 H 결과와 맞춤)
+const DONG_MAP = {
+    "구로구": ["신도림동","구로1동","구로2동","구로3동","구로4동","구로5동",
+               "가리봉동","고척1동","고척2동","개봉1동","개봉2동","개봉3동",
+               "오류1동","오류2동","수궁동","항동"],
+
+};
+
+function fillDong(gu, selectedDong) {
+    let $dong = $("#dong"); // jq를 지정한 값을 담기 위해서는 $변수명으로 해야함.
+    $dong.empty().append('<option value="">동 선택</option>'); // .empty() 선택한 요소를 지우고 새 요소를 추가함.
+    if (!DONG_MAP[gu]) return; // 만약 위치찾기에 [gu]가 존재하는지 없다면 그냥 리턴.
+    DONG_MAP[gu].forEach(function(d) { //구가 있다면 동을 차례로 반복,
+        $dong.append('<option value="' + d + '">' + d + '</option>');
+    });
+    if (selectedDong) $dong.val(selectedDong); // 선택된 동을 동의 벨류로 올린다.
+}
+
+$(function() {
+
+    /* ---------- 지역 선택 ---------- */
+    $("#Location_services").click(function() { // 지역 조회 버튼을 누르면
+        $("#region_modal").show(); // 모달이 나옴
+    });
+    $("#modal_close").click(function() { // 닫기를 누르면
+        $("#region_modal").hide(); // 숨겨짐
+    });
+
+    $("#gu").change(function() { //구를 바꾸면
+        fillDong($(this).val(), null); //구는 해당되는 동을 찾고, 없으면 널값
+    });
+
+    // 서버에서 내려준 현재 선택값 복원
+    let curGu = $("#gu").data("selected"); //curGu는 구에서 선택된 값을 선택
+    if (curGu) { $("#gu").val(curGu); fillDong(curGu, $("#dong").data("selected")); }
+	// 만약 curGu가 존대한다면 Id가 gu값을 curGu로 변경하고, fill동 함수 실행 선택된 구, 그리고 선택 동을 찾음.
+    $("#region_apply").click(function() { // Id : region_apply 누른다면
+        let gu = $("#gu").val(); //변수 gu에 Id 해당되는 구를 넣어줌(바꿨거나 할거아님.)
+        let dong = $("#dong").val(); // 동도 똑같이, 바뀌었을수도 있고 하니깐.
+        if (!gu) { alert("구를 선택해 주세요."); return; } // 선택 안했다면...
+        location.href = "/?gu=" + encodeURIComponent(gu)
+                      + "&dong=" + encodeURIComponent(dong || "");
+    }); // 링크이동, 구와 동에 맞는 encodeURIComponent 깨지지 않게,
+
+    $("#use_gps").click(function() { //내 위치 자동조회 함수.api 가져온거긴 함.
+        if (!navigator.geolocation) { // 만약 브라우저가 네비게이터.지오렉션 기능을 지원하지 않는다면 띄워줌
+            alert("이 브라우저는 위치 조회를 지원하지 않습니다");
+            return;
+        }
+        navigator.geolocation.getCurrentPosition( // 네비게이션,지오렉션,겟커렌트포지션  지오렉션은 etCurrentPositio 인터페이스 내에 함수이며이고 각각의 콜백함수를 요구함
+        			// 콜백함수란 : 일단 정의 하고 나중에 실행할 수 있게 설정하는 함수, 
+                     //적용했을때  성공했을떄에 경우, 실패했을때에 경우, 옵션 선택해야 하나 비워줘도 노상관.
+            function(pos) {
+                let lat = pos.coords.latitude;
+                let lng = pos.coords.longitude;
+
+                let geocoder = new kakao.maps.services.Geocoder();
+                geocoder.coord2RegionCode(lng, lat, function(result, status) {
+                    if (status !== kakao.maps.services.Status.OK) {
+                        alert("주소를 가져오지 못했습니다");
+                        return;
+                    }
+                    // 행정동(H) 결과 우선
+                    let region = result.find(r => r.region_type === "H") || result[0];
+                    let gu = region.region_2depth_name;
+                    let dong = region.region_3depth_name;
+
+                    if (!DONG_MAP[gu]) {
+                        alert("현재 서비스 지역은 구로구·금천구입니다.\n현재 위치: " + gu + " " + dong);
+                        return;
+                    }
+                    $("#gu").val(gu);
+                    fillDong(gu, DONG_MAP[gu].includes(dong) ? dong : null);
+                    if (!DONG_MAP[gu].includes(dong)) {
+                        alert(gu + "로 설정했습니다. 동은 직접 선택해 주세요.");
+                    }
+                });
+            },
+            function(err) {
+                alert("위치 권한이 거부되었습니다. 구/동을 직접 선택해 주세요.");
+                console.log(err);
+            }
+        );
+    });
+
+    /* ---------- 알림 ---------- */
+    function loadAlarmCount() { // 알람 카운트 함수
+        $.getJSON("/alarm/count", function(res) { //get 요청을 보내고 json방식으로 받아올때, 콜백 함수로 res를 받아옴. 
+            $("#alarm_count").text(res.count); // 콜백함수로 받은. res.count에 대해 텍스트로 바꿔주고 화면에 보여줌
+        });  
+    }
+
+    function loadAlarmList() { //알람 리스트 로드 함수
+        $.getJSON("/alarm/list", function(list) { //알람 /리스트 라는 get방식으로 요청을 보내고 리스트로 받아돔,
+            if (!list || list.length === 0) { // 만약없다면
+                $("#alarm_card_list").html("<p>새 알림이 없습니다.</p>"); // 리스트에 해당되는 html에 넣어주지 않고 새 알림이 없습니다를 넣어줌,
+                return;
+            }
+            let html = ""; // html이 비어져 이쓴ㄴ 형태로 만들어짐.
+            list.forEach(function(a) { // 포이치가 만들어진 임의의 매게변수 a. 그냥 서버가 json을 통해 필드의 이름이 a임.
+                html +=
+                '<div class="alarm_card' + (a.read ? '' : ' alarm_card_new') + '"'
+                + ' data-alarm-id="' + a.alarmId + '"'
+                + ' data-post-id="' + a.postId + '">'
+                +   '<div class="alarm_card_top">'
+                +     '<p>' + (a.type === "COMMENT" ? "댓글" : "신청") + '</p>'
+                +     '<p>' + a.createdDate + '</p>'
+                +   '</div>'
+                +   '<div class="alarm_card_center">'
+                +     '<p>' + a.message + '</p>'
+                +   '</div>'
+                + '</div>';
+                
+                
+                // a에 해당하는 걸 읽었다면, 빈 문자열, 읽지 않았다면 new라는 클래스를 붙임
+                // data 알람 아이디에 값을 a.alramId를 붙여줌 글에 대한 것도 똑같이
+                // 알람에 타입이 댓글이라면 코멘트 아니면 신청.
+                // 쓰여진 날짜.
+                //??? 메세지는 왜 붙여놓건진 모르겠는데 댓글 내용이나 신청 내용같음.
+            }); //위에 형태로 만들어짐 알람이.
+            $("#alarm_card_list").html(html); // 알람 리스트 html에 교체
+        });
+    }
+
+    $("#alarm").click(function() {
+        $("#alarm_modal").show();
+        loadAlarmList();
+    });
+    $("#alarm_close").click(function() {
+        $("#alarm_modal").hide();
+    });
+
+    // 카드 클릭 → 읽음 처리 후 해당 글로 이동
+    $(document).on("click", ".alarm_card", function() { // 카드를 클릭하면 함수 발동.
+    // $(".alarm_card").click(... 똑같음 내용임, 내부에서 돌아가는 방식 차이, 다만 차이는 선택자를 직접 찾느냐 아니면 html 전체를 찾느냐 ㅏ차이
+    // 다만 여기서는 다큐먼트는 Html 전체를 의미함 즉 페이지의 로딩이 끝나도, html은 살아있다(document는 살아있으므로 알람이 추가되도 알아봄.)
+    // 생성자.click 페이지 로드 순간(이 줄을 읽는 순간) 알람관련 내용이 등록되지 않았다면 찾을수 없음. (클릭 순간이랑 읽는거랑 다름. 클릭 하기 전에 로드 하는 순간 이 함수를 읽음)
+    // 직접 바인딩은 "등록 시점(알람 관련 내용이 등록되었을때"에 요소를 찾고, 위임은 "클릭 시점"에 판별한다.
+    // loadAlarmList() 가 다시 돌면 카드가 새로 그려지므로, 직접 바인딩은 그때마다 다시 등록해야 함.
+        let alarmId = $(this).data("alarm-id"); // 방금 클릭한 알람에서 알람 아이디를 저장함. this(선택한 div 그자체)
+        let postId  = $(this).data("post-id"); // 방큼 클릭한 알람에서 (글에 댓글이 달리면 그 글의 아이디를 담음)
+        $.post("/alarm/read/" + alarmId, function() { //먼저  .post : 비동기 방식(코드 실행할때 자기 차례가 오기를 기다리지 않고 독립적으로 움직임)
+        												// 고걸 포스트로 함. 포스트 방식으로 링크를 넣어줌, /알람/읽기/리스트 +알람 아이디 까지 추가한 링크를 포스트로 연결
+        												// 알람 읽기/리스트 알람 아이디가 읽은후 이동됨 /글/글에 대한 아이디 : 아이디 값에 대한 링크로( location.href 는 기본적으로 겟 방식 아마 주소창엔 보임)
+            location.href = "/post/post?postId=" + postId;
+        });
+    });
+
+    $("#alarm_read_all").click(function() { // 한번에 다 읽기를 누르면
+        $.post("/alarm/readAll", function() { //포스트 방식으로 연결시켜주고 
+            loadAlarmList(); // 알람 리스트 갱신
+            loadAlarmCount(); //알람 카운트 갱신 맞나?
+        });
+    });
+
+    loadAlarmCount(); // 모달이 닫히든 열려있든 갱신.
+    setInterval(loadAlarmCount, 30000); // 30초마다 갱신
+});
+</script>
+
+</body>
+</html>

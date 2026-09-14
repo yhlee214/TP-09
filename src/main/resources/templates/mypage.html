@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=29b3650196f8fedd2d1e247efd58ae3f"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<meta charset="UTF-8">
+<title>마이페이지</title>
+</head>
+<body>
+<div class = "my_page">
+<div class="my_section">
+    <h3>내가 쓴 공구</h3>
+    <div th:each = "p : ${myPostList}">
+        <a th:href="@{/post/detail(postId=${p.postId})}" th:text="${p.title}">제목</a>
+        <span th:text="${p.state}">상태</span>
+    </div>
+    <h3>내가 쓴 댓글</h3>
+    <div th:each = "c : ${myCommentList}">
+        <a th:href="@{/post/detail(commentId=${c.commentId})}" th:text="${c.content}">내용</a>
+    </div>
+  <p th:if="${myPostList == null or myPostList.isEmpty()}">작성한 공구가 없습니다.</p>
+</div>
+    <div id="myApplies" class="my_section">
+        <div th:each="a : ${myApplyList}">
+            <a th:href="@{/post/detail(postId=${a.postId})}">
+                <p th:text="${a.title}">글 제목</p>
+                <p>신청 수량 : <span th:text="${a.qty}"></span></p>
+                <p th:text="${a.applyState}">대기중</p>
+            </a>
+            <form th:action="@{/apply/cancel}" method="post"
+                  th:if="${a.applyState == '대기'}"
+                  onsubmit="return confirm('신청을 취소하시겠습니까?')">
+                <input type="hidden" name="applyId" th:value="${a.applyId}">
+                <button type="submit">신청 취소</button>
+            </form>
+        </div>
+        <p th:if="${myApplyList == null or myApplyList.isEmpty()}">신청한 공구가 없습니다.</p>
+    </div>
+<div class="my_section">
+    <h3>내 공구에 들어온 신청</h3>
+    
+    <div th:each="r : ${receivedList}">
+        <p><span th:text="${r.title}">글 제목</span></p>
+        <p><span th:text="${r.applicant}">신청자</span> · 
+           <span th:text="${r.qty}">수량</span>개 · 
+           <span th:text="${r.applyState}">대기중</span></p>
+
+        <div th:if="${r.applyState == '대기중'}">
+            <form th:action="@{/apply/approve}" method="post" style="display:inline">
+                <input type="hidden" name="applyId" th:value="${r.applyId}">
+                <button type="submit">승인</button>
+            </form>
+            <form th:action="@{/apply/reject}" method="post" style="display:inline"
+                  onsubmit="return confirm('거절하시겠습니까?')">
+                <input type="hidden" name="applyId" th:value="${r.applyId}">
+                <button type="submit">거절</button>
+            </form>
+        </div>
+    </div>
+
+    <p th:if="${receivedList == null or receivedList.isEmpty()}">받은 신청이 없습니다.</p>
+</div>
+    
+</div>
+</body>
+</html>

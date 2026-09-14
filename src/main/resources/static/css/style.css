@@ -1,0 +1,582 @@
+@charset "UTF-8";
+
+/* ============================================
+   공구 사이트 - 메인 스타일
+   메인 컬러: 시폼 그린 / 배경: 연한 살구
+   ============================================ */
+
+:root {
+    --seafoam:        #4FB79A;   /* 메인 - 버튼, 강조 */
+    --seafoam-deep:   #3A9480;   /* 호버 */
+    --seafoam-light:  #D6F0E7;   /* 옅은 배경, 태그 */
+    --bg:             #FDF3EC;   /* 배경 - 연한 살구 */
+    --card:           #FFFFFF;
+    --line:           #EADDD2;
+    --text:           #2F3A36;
+    --text-sub:       #7E8B86;
+
+    --status-open:    #2E9E6B;
+    --status-soon:    #D94F4F;
+    --status-closed:  #9AA3A0;
+
+    --radius:         14px;
+    --header-h:       64px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Pretendard", "Malgun Gothic", "맑은 고딕", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    padding-top: var(--header-h);   /* 고정 헤더 높이만큼 밀어줌 */
+}
+
+a { text-decoration: none; color: inherit; }
+button, input[type="button"], input[type="submit"] { font-family: inherit; cursor: pointer; }
+
+
+/* ============================================
+   상단 헤더 (스크롤해도 고정)
+   ============================================ */
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-h);
+    background: rgba(253, 243, 236, 0.94);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 500;
+}
+
+/* 왼쪽 - 로고 */
+.top_left_menu {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--seafoam-deep);
+    letter-spacing: -0.02em;
+}
+
+/* 가운데 - 지역 선택 */
+.top_center_menu {
+    flex: 0 0 auto;
+}
+
+#Location_services {
+    background: var(--card);
+    border: 1.5px solid var(--seafoam);
+    border-radius: 999px;
+    padding: 8px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--seafoam-deep);
+    transition: background 0.15s;
+}
+
+#Location_services:hover { background: var(--seafoam-light); }
+
+#Location_services::before {
+    content: "📍";
+    margin-right: 6px;
+}
+
+/* 오른쪽 - 마이페이지 / 알림 / 로그아웃 */
+.top_right_menu {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.top_right_menu input[type="button"],
+.top_right_menu button {
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--text-sub);
+    border-radius: 8px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.top_right_menu input[type="button"]:hover,
+.top_right_menu button:hover {
+    color: var(--seafoam-deep);
+    background: var(--seafoam-light);
+}
+
+/* 알림 뱃지 */
+#alarm {
+    position: relative;
+}
+
+#alarm_count {
+    display: inline-block;
+    min-width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    padding: 0 5px;
+    background: var(--status-soon);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    border-radius: 999px;
+}
+
+/* 알림 0건일 때 뱃지 숨기려면 JS에서 이 class를 붙이세요 */
+#alarm_count.is_zero { display: none; }
+
+
+/* ============================================
+   글 카드 리스트
+   ============================================ */
+
+.post_card_list {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 120px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.post_card {
+    display: grid;
+    grid-template-columns: 1fr 110px;
+    grid-template-areas:
+        "top  img"
+        "mid  img"
+        "bot  bot";
+    gap: 4px 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px;
+    transition: border-color 0.15s, transform 0.15s;
+}
+
+.post_card:hover {
+    border-color: var(--seafoam);
+    transform: translateY(-2px);
+}
+
+.post_card p { margin: 0; }
+
+/* 제목 / 작성자 / 작성일 */
+.post_card_top_center {
+    grid-area: top;
+    min-width: 0;
+}
+
+.post_card_top_center h3 {
+    margin: 2px 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.35;
+    /* 제목 2줄까지만 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 글 번호 - 작게, 눈에 덜 띄게 */
+.post_card_top_center p:first-child {
+    font-size: 12px;
+    color: var(--text-sub);
+}
+
+/* 작성자 + 작성일을 한 줄로 */
+.post_card_top_center p:nth-child(3),
+.post_card_top_center p:nth-child(4) {
+    display: inline;
+    font-size: 13px;
+    color: var(--text-sub);
+}
+
+.post_card_top_center p:nth-child(3)::after {
+    content: "·";
+    margin: 0 6px;
+    color: var(--line);
+}
+
+/* 이미지 */
+.post_card_top_right {
+    grid-area: img;
+    width: 110px;
+    height: 110px;
+    background: var(--seafoam-light);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text-sub);
+}
+
+.post_card_top_right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 물품명 / 수량 / 가격 */
+.post_card_center {
+    grid-area: mid;
+    align-self: end;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    font-size: 14px;
+}
+
+/* 물품명 */
+.post_card_center p:nth-child(1) {
+    width: 100%;
+    color: var(--text-sub);
+}
+
+/* 수량 (n / n) */
+.post_card_center p:nth-child(2) {
+    font-weight: 700;
+    color: var(--seafoam-deep);
+}
+
+/* 가격 */
+.post_card_center p:nth-child(3) {
+    font-weight: 600;
+}
+
+.post_card_center p:nth-child(3)::after {
+    content: "원";
+    font-weight: 400;
+    font-size: 13px;
+    margin-left: 1px;
+}
+
+/* 상태 */
+.post_card_bottom {
+    grid-area: bot;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+
+.post_card_bottom p {
+    display: inline-block;
+    padding: 3px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 999px;
+    background: var(--seafoam-light);
+    color: var(--status-open);
+}
+
+/* 상태별 색 - th:class 로 붙이세요 */
+.status_open   { background: #DFF3E8 !important; color: var(--status-open)   !important; }
+.status_soon   { background: #FBE4E4 !important; color: var(--status-soon)   !important; }
+.status_closed { background: #ECEEED !important; color: var(--status-closed) !important; }
+
+/* 글이 하나도 없을 때 */
+.post_card_list:empty::before {
+    content: "이 지역에는 아직 공구 글이 없습니다. 첫 글을 올려보세요.";
+    grid-column: 1 / -1;
+    padding: 80px 0;
+    text-align: center;
+    color: var(--text-sub);
+}
+
+
+/* ============================================
+   글쓰기 버튼 (스크롤해도 떠 있음)
+   ============================================ */
+
+#Post {
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    padding: 14px 28px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(79, 183, 154, 0.4);
+    transition: background 0.15s, transform 0.15s;
+    z-index: 400;
+}
+
+#Post:hover {
+    background: var(--seafoam-deep);
+    transform: translateY(-2px);
+}
+
+
+/* ============================================
+   모달 공통
+   ============================================ */
+
+#region_modal,
+#alarm_modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--card);
+    border: none;
+    border-radius: 18px;
+    padding: 28px;
+    min-width: 340px;
+    max-width: 90vw;
+    box-shadow: 0 20px 50px rgba(47, 58, 54, 0.22);
+    z-index: 1000;
+}
+
+#region_modal select {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 11px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+
+#region_modal button,
+#alarm_modal button {
+    padding: 10px 18px;
+    margin-top: 8px;
+    margin-right: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--text-sub);
+    transition: background 0.15s;
+}
+
+#region_modal button:hover,
+#alarm_modal button:hover { background: var(--bg); }
+
+/* 주 동작 버튼 */
+#region_apply {
+    background: var(--seafoam) !important;
+    border-color: var(--seafoam) !important;
+    color: #fff !important;
+}
+
+#region_apply:hover { background: var(--seafoam-deep) !important; }
+
+#use_gps {
+    color: var(--seafoam-deep) !important;
+    border-color: var(--seafoam) !important;
+}
+
+
+/* ============================================
+   알림 모달
+   ============================================ */
+
+#alarm_modal { min-width: 380px; }
+
+.alarm_card_list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 8px;
+}
+
+.alarm_card {
+    padding: 14px;
+    margin-bottom: 8px;
+    background: var(--bg);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.alarm_card:hover { background: var(--seafoam-light); }
+
+/* 안 읽은 알림 */
+.alarm_card_new {
+    background: var(--seafoam-light);
+    border-left: 3px solid var(--seafoam);
+}
+
+.alarm_card_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.alarm_card_top p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-sub);
+}
+
+.alarm_card_top p:first-child {
+    font-weight: 700;
+    color: var(--seafoam-deep);
+}
+
+.alarm_card_center p {
+    margin: 0;
+    font-size: 14px;
+}
+
+
+/* ============================================
+   로그인 / 회원가입 폼 (공용)
+   ============================================ */
+
+.center_box {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 36px;
+    background: var(--card);
+    border-radius: 18px;
+    border: 1px solid var(--line);
+}
+
+.center_box input[type="text"],
+.center_box input[type="password"],
+form input[type="text"],
+form input[type="password"] {
+    width: 100%;
+    padding: 11px 14px;
+    margin: 4px 0 12px;
+    font-size: 15px;
+    font-family: inherit;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+}
+
+form input[type="text"]:focus,
+form input[type="password"]:focus {
+    outline: 2px solid var(--seafoam);
+    outline-offset: -1px;
+    border-color: transparent;
+}
+
+form label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-sub);
+}
+
+form button[type="submit"] {
+    width: 100%;
+    padding: 13px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+form button[type="submit"]:hover { background: var(--seafoam-deep); }
+
+/* 전화번호 3칸은 가로로 */
+form input#phone1,
+form input#phone2,
+form input#phone3 {
+    width: 90px;
+    display: inline-block;
+}
+
+/* 우편번호 찾기 같은 보조 버튼 */
+input[type="button"]#dupcheck_Id,
+input[type="button"][value="우편번호 찾기"] {
+    padding: 10px 16px;
+    background: var(--seafoam-light);
+    border: 1px solid var(--seafoam);
+    border-radius: 10px;
+    color: var(--seafoam-deep);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+textarea {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--text-sub);
+}
+
+
+/* ============================================
+   모바일
+   ============================================ */
+
+@media (max-width: 600px) {
+    .header { padding: 0 14px; }
+    .logo { font-size: 17px; }
+
+    #Location_services {
+        padding: 7px 14px;
+        font-size: 14px;
+    }
+
+    .top_right_menu input[type="button"],
+    .top_right_menu button {
+        padding: 6px 8px;
+        font-size: 13px;
+    }
+
+    .post_card_list {
+        grid-template-columns: 1fr;
+        padding: 20px 14px 110px;
+    }
+
+    #Post {
+        right: 18px;
+        bottom: 18px;
+        padding: 12px 22px;
+    }
+
+    #region_modal,
+    #alarm_modal {
+        min-width: 0;
+        width: calc(100vw - 32px);
+        padding: 22px;
+    }
+}
+
+
+/* 접근성 - 모션 줄이기 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th= "http://www.thymeleaf.org"> <!-- 타임리프를 적용시켜주는 친구 -->
+<!-- 서버에서 html을 만들어서 보내주는 템플릿 엔진! jsp를 대체합니다. -->
+<!-- 스프링 부트에서 html을 쓰는 이유는 부트에서는 자체 서버 구동을 하는데 스프링 내부 서버실행기가 jsp에 자바 변환을 지원하지 않음. -->
+<!-- html은 순수 html이라 jstl을 알아먹지 못함  타임리프를 사용해서 반복문이 작동할 수 있게 넣어주는거임. th: 같은걸로-->
+
+<head>
+<meta charset="UTF-8">
+<title> login </title>
+</head>
+<body>
+<div class="center_box">
+<form name = "login" method="post" th:action = "@{/login}"> <!-- sign : 컨택스트 패스(/cotlloer) 를 자동적용 시켜주므로 자동으로 찾아줌-->
+<div>
+<label class="Id_label">아이디</label>
+<input type ="text" name = "userId"  id = "userId">
+</div>
+<div>
+<label class="pw_label">비밀번호</label>
+<input type ="password" name = "userPw" id = "userpw">
+<button type = "submit" name = "login_btn">로그인</button>
+</div>
+</form>
+<div>
+<form name = "signup" method="get" th:action = "@{/signup}"> <!-- sign : 컨택스트 패스 를 자동적용 시켜줌.-->
+<button type = "submit" name = "signup_btn">회원가입</button>
+</form>
+</div>
+
+
+</div>
+</body>
+</html>
