@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import jakarta.servlet.http.HttpSession;
@@ -28,7 +28,7 @@ public class PartyController {
 	@GetMapping("/list")
 	public String getMain(Model model) {		
 		List<PartyTO> list = ptService.getPartyList();
-		model.addAttribute("list", list);
+		model.addAttribute("partyList", list);
 		return "/list";
 	}
 	// 공구글 작성 폼으로 이동
@@ -50,8 +50,8 @@ public class PartyController {
 		return "redirect:/list";
 	}
 	
-	@GetMapping("/post/{no}")
-	public String detail(Model model, @PathVariable("no") int no, HttpSession session) {
+	@GetMapping("/post/detail")
+	public String detail(Model model, @RequestParam("partyNo") int no, HttpSession session) {
 		
 		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
 		
@@ -70,8 +70,8 @@ public class PartyController {
 		return "/postdetail";
 	}
 
-	@PostMapping("/postdelete/{no}")
-	public String delete(@PathVariable("no") int no, HttpSession session) {
+	@PostMapping("/post/delete")
+	public String delete(@RequestParam("partyNo") int no, HttpSession session) {
 		
 		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
 		
@@ -80,5 +80,8 @@ public class PartyController {
 		return "redirect:/list";
 	}
 	
-	
+	@GetMapping("/main")
+	public String main() {
+	    return "redirect:/list";
+	}
 }
