@@ -72,13 +72,6 @@
 	<input type="number" id="maxQty" name="maxQty" min="1" value="1">
 </div>
 
-<div>
-    <label for="regionNo">지역(동)</label>
-    <select id="regionNo" name="regionNo">
-        <option value="">동 선택</option>
-        <option th:each="r : ${regionList}" th:value="${r.regionNo}" th:text="${r.dong}"></option>
-    </select>
-</div>
 
 <button type="submit">등록하기</button>
 </form>
@@ -184,11 +177,6 @@ $('#post_form').submit(function(e) { // 하나라도 비어있다면 제출을 �
     if(!$('#partyEndDateTime').val()) {
         e.preventDefault();
         alert('마감일을 입력해주세요.');
-        return false;
-    }
-    if(!$('#regionNo').val()) {
-        e.preventDefault();
-        alert('지역(동)을 선택해주세요.');
         return false;
     }
     if(!$('#latitude').val() || !$('#longitude').val()) {

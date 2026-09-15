@@ -4,8 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -43,6 +46,7 @@ public class PartyController {
 	public String writeForm(PartyTO partyTO, HttpSession session) {
 		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
 		partyTO.setUserNo(loginUser.getUserNo());
+		partyTO.setRegionNo(loginUser.getRegionNo());	// 글 지역 = 작성자 동네 (폼의 동 선택 제거)
 		partyTO.setPartyDateTime(LocalDateTime.now());
 		partyTO.setRecentUpdate(LocalDateTime.now());
 		ptService.createParty(partyTO);
@@ -83,5 +87,10 @@ public class PartyController {
 	@GetMapping("/main")
 	public String main() {
 	    return "redirect:/list";
+	}
+	
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+	    binder.setDisallowedFields("productImg");   // 파일은 커맨드 객체에 바인딩하지 않음
 	}
 }
