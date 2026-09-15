@@ -18,5 +18,10 @@
 		delete from reply
 		where reply_no = #{replyNo}
 	</delete>
+	
+	<select id="getReplyByReplyNo" parameterType="int" resultType="lx.edu.gonggu.to.ReplyTO">
+    select * from reply
+    where reply_no = #{replyNo}
+</select>
 
 </mapper>

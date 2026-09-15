@@ -1,6 +1,8 @@
 package lx.edu.gonggu.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
@@ -33,6 +35,13 @@ public class PartyDAO {
 	
 	public int deleteParty (int partyNo) {
 		return session.delete("mapper-party.deleteParty", partyNo);
+	}
+	
+	public int increaseAccumQty(int partyNo, int qty) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("partyNo", partyNo);
+		params.put("qty", qty);
+		return session.update("mapper-party.increaseAccumQty", params);
 	}
 	
 }
