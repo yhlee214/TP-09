@@ -33,5 +33,9 @@ public class AttendanceDAO {
 	public AttendanceTO getAttByAttNo(int attNo) {
 		return session.selectOne("mapper-att.getAttByAttNo", attNo);
 	}
+	
+	public List<AttendanceTO> getAttListByPartyOwner(int userNo) {
+	    return session.selectList("mapper-att.getAttListByPartyOwner", userNo);
+	}
 
 }

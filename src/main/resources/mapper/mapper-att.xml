@@ -2,24 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="mapper-att">
 
-	<insert id="createAtt" parameterType="lx.edu.gonggu.to.AttendanceTO">
-		insert into attendance (att_qty, att_datetime, party_no, user_no)
+	<insert id="createAtt"
+		parameterType="lx.edu.gonggu.to.AttendanceTO">
+		insert into attendance (att_qty, att_datetime, party_no,
+		user_no)
 		values (#{attQty}, now(), #{partyNo}, #{userNo})
 	</insert>
-	
-	<select id="getAttListByUserNo" parameterType="int" resultType="lx.edu.gonggu.to.AttendanceTO">
+
+	<select id="getAttListByUserNo" parameterType="int"
+		resultType="lx.edu.gonggu.to.AttendanceTO">
 		select att_no,
-		 	   att_qty,
-		 	   att_datetime,
-		 	   att_status,
-		 	   party_no,
-		from attendance 
+		att_qty,
+		att_datetime,
+		att_status,
+		party_no,
+		from attendance
 		where user_no = #{userNo}
 	</select>
- 
+
 	<delete id="deleteAtt" parameterType="int">
 		delete from Attendance
 		where att_no = #{attNo}
 	</delete>
- 
+
+	<select id="getAttListByPartyOwner" parameterType="int"
+		resultType="lx.edu.gonggu.to.AttendanceTO">
+		select a.att_no, a.att_qty, a.att_datetime, a.att_status,
+		a.party_no, a.user_no, p.party_title
+		from attendance a
+		join party p on a.party_no = p.party_no
+		where p.user_no = #{userNo}
+		order by a.att_datetime desc
+	</select>
+
 </mapper>

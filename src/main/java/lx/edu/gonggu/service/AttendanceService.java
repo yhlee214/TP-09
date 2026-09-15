@@ -37,5 +37,11 @@ public class AttendanceService {
 		
 	}
 	
+	public List<AttendanceTO> getAttListByPartyOwner(int userNo) {
+	    return dao.getAttListByPartyOwner(userNo);
+	}
 	
+	public List<AttendanceTO> getAttListByUserNo(int userNo) {
+		return dao.getAttListByUserNo(userNo);
+	}
 }
