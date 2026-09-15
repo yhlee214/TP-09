@@ -11,6 +11,8 @@ public class PartyTO {
 	private String partyTitle;
 	private int targetQty;
 	private Date splitDatetime;
+	private String splitAddr;
+	private String splitPlace;
 	private double longitude;
 	private double latitude;
 	private String productName;
