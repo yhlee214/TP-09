@@ -46,7 +46,7 @@ public class UserController {
 	}
 
 	// 로그인 페이지로 이동한다.
-	@GetMapping("/login")
+	@GetMapping({"/login", "/loginform"}) // 고친 이후 지금 회원가입 이후랑 로그아웃이 둘다 리턴 로그인 폼으로 보내고 있어서 수정
 	public String loginForm() {
 		return "/loginform";
 	}
