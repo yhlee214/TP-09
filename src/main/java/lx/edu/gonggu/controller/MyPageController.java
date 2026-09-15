@@ -23,9 +23,9 @@ public class MyPageController {
 		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
 		
 		int userNo = loginUser.getUserNo();
-		model.addAttribute("myParties", ptService.getPartyListByUserNo(userNo));
-		model.addAttribute("myAttends", attService.getAttListByUserNo(userNo));
-		model.addAttribute("myPartiesAttends", attService.getAttListByPartyOwner(userNo));
+		model.addAttribute("myPartyList", ptService.getPartyListByUserNo(userNo));
+		model.addAttribute("myAttList", attService.getAttListByUserNo(userNo));
+		model.addAttribute("receivedList", attService.getAttListByPartyOwner(userNo));
 		
 		return "/mypage";
 	}

@@ -3,7 +3,7 @@
 <mapper namespace="mapper-party">
 
 	<select id="getPartyListByUserNo" parameterType="int" resultType="lx.edu.gonggu.to.PartyTO">
-		select party_title, target_qty, split_datetime, product_name
+		select party_no, party_title, party_status, target_qty, split_datetime, product_name
 		from party
 		where user_no = #{userNo}
 	</select>

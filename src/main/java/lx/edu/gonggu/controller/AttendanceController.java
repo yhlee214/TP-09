@@ -27,7 +27,7 @@ public class AttendanceController {
 		attTo.setUserNo(loginUser.getUserNo());	
 		service.createAtt(attTo);
 		
-		return "redirect:/post/"+attTo.getPartyNo();
+		return "redirect:/post/detail?partyNo="+attTo.getPartyNo();
 	}
 	
 	@PostMapping("/apply/{no}")
@@ -36,7 +36,7 @@ public class AttendanceController {
 		
 		int partyNo = service.deleteAtt(attNo, loginUser.getUserNo());
 		
-		return "redirect:/post/" +partyNo;
+		return "redirect:/post/detail?partyNo=" +partyNo;
 	}
 	
 	
