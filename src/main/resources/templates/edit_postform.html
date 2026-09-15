@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=29b3650196f8fedd2d1e247efd58ae3f&libraries=services"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<meta charset="UTF-8">
+<title>글 수정</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="page_form">
+
+<a th:href="@{/main}" class="page_button">
+    <img th:src="@{/images/logo2.png}" alt="동네공구" class="button_img">
+</a>
+
+<h1>글 수정</h1>
+
+<form id="post_form" method="post" th:action="@{/post/update}" enctype="multipart/form-data">
+<input type="hidden" name="partyNo" th:value="${party.partyNo}">
+<div>
+    <label for="partyTitle">제목</label>
+    <input type="text" id="partyTitle" name="partyTitle" th:value="${party.partyTitle}">
+</div>
+<div>
+    <label for="productName">물품명</label>
+    <input type="text" id="productName" name="productName" th:value="${party.productName}">
+</div>
+
+<div>
+    <label>기존 이미지</label>
+    <img th:if="${party.productImg != null}" th:src="@{${party.productImg}}" alt="기존 이미지">
+    <p th:if="${party.productImg == null}">등록된 이미지가 없습니다</p>
+    <input type="hidden" name="oldProductImg" th:value="${party.productImg}">
+</div>
+
+<div>
+    <label for="productImg">이미지 변경 (안 고르면 기존 이미지 유지)</label>
+    <input type="file" id="productImg" name="productImg" accept="image/*">
+</div>
+
+<div>
+    <label for="targetQty">총 수량</label>
+    <input type="number" id="targetQty" name="targetQty" min="1" th:value="${party.targetQty}">
+</div>
+<div>
+    <label for="productPrice">개당 가격</label>
+    <input type="number" id="productPrice" name="productPrice" min="0" th:value="${party.productPrice}">
+</div>
+<div>
+    <label for="partyEndDateTime">마감일</label>
+    <input type="datetime-local" id="partyEndDateTime" name="partyEndDateTime"
+           th:value="${party.partyEndDateTime != null} ? ${#temporals.format(party.partyEndDateTime,'yyyy-MM-dd''T''HH:mm')} : ''">
+</div>
+<div>
+    <label for="splitDatetime">나눔 일시</label>
+    <input type="datetime-local" id="splitDatetime" name="splitDatetime"
+           th:value="${party.splitDatetime != null} ? ${#temporals.format(party.splitDatetime,'yyyy-MM-dd''T''HH:mm')} : ''">
+</div>
+<div>
+	<label for="keyword">거래 장소</label>
+	<input type="text" id="keyword" placeholder="장소나 주소를 입력하세요" th:value="${party.splitPlace}">
+	<button type="button" id="search_place" name="search_place">검색</button>
+</div>
+
+<ul id="place_list"></ul>
+
+<input type="hidden" name="splitPlace" id="splitPlace" th:value="${party.splitPlace}">
+<input type="hidden" name="splitAddr" id="splitAddr" th:value="${party.splitAddr}">
+<input type="hidden" name="latitude" id="latitude" th:value="${party.latitude}">
+<input type="hidden" name="longitude" id="longitude" th:value="${party.longitude}">
+
+<div id="map" style="width:100%; height:350px; margin-bottom:18px;"></div>
+
+<div>
+	<label for="productContent">기타 내용</label>
+	<textarea id="productContent" name="productContent" th:text="${party.productContent}"></textarea>
+</div>
+
+<div>
+	<label for="maxQty">1인당 최대 구매 개수</label>
+	<input type="number" id="maxQty" name="maxQty" min="1" th:value="${party.maxQty}">
+</div>
+
+<div>
+    <label for="regionNo">지역(동)</label>
+    <select id="regionNo" name="regionNo">
+        <option value="">동 선택</option>
+        <option th:each="r : ${regionList}" th:value="${r.regionNo}" th:text="${r.dong}"
+                th:selected="${r.regionNo == party.regionNo}"></option>
+    </select>
+</div>
+
+<button type="submit">수정하기</button>
+</form>
+
+<script type="text/javascript">
+
+let map, marker, ps;
+
+$(function() {
+    // 저장된 좌표가 있으면 그 위치로, 없으면 구로구청으로
+    let lat = parseFloat($("#latitude").val()) || 37.4954;
+    let lng = parseFloat($("#longitude").val()) || 126.8874;
+    let pos = new kakao.maps.LatLng(lat, lng);
+
+    let mapContainer = document.getElementById('map');
+    map = new kakao.maps.Map(mapContainer, {
+       center: pos,
+       level: 4
+    });
+    ps = new kakao.maps.services.Places();
+
+    if($("#latitude").val()) {
+	    marker = new kakao.maps.Marker({
+            position : pos,
+            map : map
+        });
+    }
+
+    $('#search_place').click(searchPlace);
+    $('#keyword').keydown(function(e) {
+       if(e.key === "Enter") {
+           e.preventDefault();
+           searchPlace();
+       }
+    });
+});
+
+function searchPlace() {
+    let keyword = $('#keyword').val().trim();
+    if(keyword === "") {
+        alert("장소를 입력하세요.");
+        return;
+    }
+
+    ps.keywordSearch(keyword, function(data, status) {
+        // 카카오가 제공하는 함수. 콜백은 검색이 끝난 뒤 실행됨.
+        if (status !== kakao.maps.services.Status.OK) {
+            $("#place_list").html("<li>검색 결과가 존재하지 않습니다.</li>");
+            return;
+        }
+        let html = "";
+        data.forEach(function(place) {
+            html += '<li class="place_item"'
+            + ' data-place-name="' + place.place_name + '"'
+            + ' data-address="' + place.road_address_name + '"'
+            + ' data-lat="' + place.y + '"'  // 위도
+            + ' data-lng="' + place.x + '"'  // 경도. 측지에서 x축이 경도
+            + '>' + place.place_name + '</li>';
+        });
+        $("#place_list").html(html);
+    });
+}
+
+$(document).on("click", ".place_item", function() {
+    // 검색 결과 li 는 나중에 만들어지므로 이벤트 위임을 씀
+    let name = $(this).data("place-name");
+    let addr = $(this).data("address");
+    let lat  = $(this).data("lat");
+    let lng  = $(this).data("lng");
+
+    $("#splitPlace").val(name);
+    $("#splitAddr").val(addr);
+    $("#latitude").val(lat);
+    $("#longitude").val(lng);
+
+    let pos = new kakao.maps.LatLng(lat, lng);
+    if (marker){
+        marker.setMap(null); // 기존 마커 제거. 안 지우면 쌓임.
+    }
+    marker = new kakao.maps.Marker({
+        position : pos,
+        map : map
+    });
+    map.setCenter(pos);
+    $("#keyword").val(name);
+});
+
+$('#post_form').submit(function(e) {
+    if(!$('#partyTitle').val().trim()) {
+        e.preventDefault();
+        alert('제목을 입력해주세요.');
+        return false;
+    }
+    if(!$('#productName').val().trim()) {
+        e.preventDefault();
+        alert('물품명을 입력해주세요.');
+        return false;
+    }
+    if(!$('#targetQty').val()) {
+        e.preventDefault();
+        alert('총 수량을 입력해주세요.');
+        return false;
+    }
+    if(!$('#productPrice').val()) {
+        e.preventDefault();
+        alert('개당 가격을 입력해주세요.');
+        return false;
+    }
+    if(!$('#partyEndDateTime').val()) {
+        e.preventDefault();
+        alert('마감일을 입력해주세요.');
+        return false;
+    }
+    if(!$('#latitude').val() || !$('#longitude').val()) {
+        e.preventDefault();
+        alert('거래 장소를 선택해주세요.');
+        return false;
+    }
+    return true;
+});
+
+</script>
+
+</body>
+</html>
