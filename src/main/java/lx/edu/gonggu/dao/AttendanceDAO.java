@@ -26,8 +26,12 @@ public class AttendanceDAO {
 		return session.selectList("mapper-att.getAttListByUserNo", userNo);
 	}
 	
-	public int deleteAtt(AttendanceTO attto) {
-		return session.delete("mapper-att.deleteAtt", attto);
+	public int deleteAtt(int atNo) {
+		return session.delete("mapper-att.deleteAtt", atNo);
+	}
+	
+	public AttendanceTO getAttByAttNo(int attNo) {
+		return session.selectOne("mapper-att.getAttByAttNo", attNo);
 	}
 
 }
