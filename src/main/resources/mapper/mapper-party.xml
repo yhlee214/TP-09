@@ -36,4 +36,11 @@
 		delete from party
 		where party_no = #{partyNo}
 	</delete>
+	<update id="increaseAccumQty">
+		update party
+		set accum_qty = accum_qty + #{qty}
+		where party_no = #{partyNo}
+	
+	</update>
+	
 </mapper>

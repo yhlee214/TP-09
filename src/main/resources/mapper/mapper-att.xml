@@ -34,5 +34,11 @@
 		where p.user_no = #{userNo}
 		order by a.att_datetime desc
 	</select>
+	
+	<update id="updateAttStatus">
+		update attendance
+			set att_status = #{status}
+			where att_no = #{attNo}
+	</update>
 
 </mapper>

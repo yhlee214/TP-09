@@ -29,5 +29,9 @@ public class ReplyDAO {
 	public int deleteReply(int replyNo) {
 		return session.delete("mapper-reply.deleteReply", replyNo);
 	}
+	
+	public ReplyTO getReplyByReplyNo(int replyNo) {
+	    return session.selectOne("mapper-reply.getReplyByReplyNo", replyNo);
+	}
 
 }

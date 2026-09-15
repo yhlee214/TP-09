@@ -16,8 +16,10 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lx.edu.gonggu.service.AttendanceService;
 import lx.edu.gonggu.service.PartyService;
+import lx.edu.gonggu.service.ReplyService;
 import lx.edu.gonggu.to.AttendanceTO;
 import lx.edu.gonggu.to.PartyTO;
+import lx.edu.gonggu.to.ReplyTO;
 import lx.edu.gonggu.to.UsersTO;
 
 @Controller
@@ -26,6 +28,7 @@ public class PartyController {
 	
 	private final PartyService ptService;
 	private final AttendanceService attService;
+	private final ReplyService replyService;
 
 	// 목록을 조회
 	@GetMapping("/list")
@@ -61,6 +64,7 @@ public class PartyController {
 		
 		PartyTO party = ptService.getPartyDetail(no);
 		List<AttendanceTO> attList = attService.getAttList(no);
+		List<ReplyTO> replyList = replyService.showReply(no); 
 		//ApplyTO applyList 
 		
 		boolean isUser = loginUser != null && loginUser.getUserNo() ==party.getUserNo();
@@ -68,7 +72,7 @@ public class PartyController {
 		model.addAttribute("party", party);
 		model.addAttribute("userName", party.getUserName());
 		model.addAttribute("attList", attList);
-		// 추후 댓글도 포함.
+		model.addAttribute("replyList", replyList);
 		model.addAttribute("isUser", isUser);
 		
 		return "/postdetail";

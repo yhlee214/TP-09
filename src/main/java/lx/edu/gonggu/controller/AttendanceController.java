@@ -39,5 +39,21 @@ public class AttendanceController {
 		return "redirect:/post/" +partyNo;
 	}
 	
+	@PostMapping("/apply/approve")
+	public String approve(@PathVariable("no") int attNo, HttpSession session) {
+		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
+		service.approveAtt(attNo, loginUser.getUserNo());
+		
+		return "redirect:/mypage";
+	}
+	
+	@PostMapping("/apply/reject")
+	public String reject(@PathVariable("no") int attNo, HttpSession session) {
+		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
+		service.rejectAtt(attNo, loginUser.getUserNo());
+		
+		return "redirect:/mypage";
+	}
+	
 	
 }
