@@ -1,6 +1,7 @@
 package lx.edu.gonggu.to;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 
@@ -10,7 +11,7 @@ public class PartyTO {
 	private int partyNo;
 	private String partyTitle;
 	private int targetQty;
-	private Date splitDatetime;
+	private LocalDateTime splitDatetime;
 	private String splitAddr;
 	private String splitPlace;
 	private double longitude;
@@ -19,10 +20,11 @@ public class PartyTO {
 	private String productContent;
 	private int productPrice;
 	private String productImg;
-	private Date partyEndDateTime;
+	private LocalDateTime partyEndDateTime;
 	private int accumQty;
-	private Date partyDateTime;
-	private Date recentUpdate;
+	private String partyStatus;
+	private LocalDateTime partyDateTime;
+	private LocalDateTime recentUpdate;
 	private int maxQty;
 	private int userNo;
 	private int regionNo;

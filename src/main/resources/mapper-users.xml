@@ -3,25 +3,25 @@
 <mapper namespace="mapper-users">
     <insert id="createUser" parameterType="lx.edu.gonggu.to.UsersTO)">
         insert into users(USER_ID, USER_PW, USER_NAME, USER_PHONE, PARCEL_ADDR, ROAD_ADDR, REGION_NO)
-        values (#{userId}, #{userPw}, #{userName}, #{userPhone}, #{parcelAddr}, #{rodeAddr}, #{regionNo})
+        values (#{userId}, #{userPw}, #{userName}, #{userPhone}, #{parcelAddr}, #{roadAddr}, #{regionNo})
     </insert>
     
 	<select id="findByUserId" parameterType="String" resultType="lx.edu.gonggu.to.UsersTO">
-		select userId
+		select user_id
 		from users
-		where userId = #{userId}
+		where user_id = #{userId}
 	</select>
 	
 	<select id="findUserForLogin" parameterType="String" resultType="lx.edu.gonggu.to.UsersTO">
-		select userId, userPw
+		select user_id, user_pw
 		from users
-		where userId = #{userId}
+		where user_id = #{userId}
 	</select>
 	
 	<select id="getUserInfoForMyPage" parameterType="int" resultType="lx.edu.gonggu.to.UsersTO">
-		select userId, userName, userPhone, parcelAddr, rodeAddr
+		select user_id, user_name, user_phone, parcel_addr, road_addr
 		from users
-		where userNo = #{userNO}
+		where user_no = #{userNO}
 	</select>
 </mapper>
 
