@@ -3,24 +3,25 @@ package lx.edu.gonggu.service;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import lx.edu.gonggu.dao.UserDAO;
-import lx.edu.gonggu.to.UserTO;
+import lx.edu.gonggu.dao.UsersDAO;
+import lx.edu.gonggu.to.UsersTO;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 	
-	private final UserDAO dao;
+	private final UsersDAO dao;
 
-	public UserTO createUser(UserTO userTO) {
+	public UsersTO createUser(UsersTO usersTO) {
 	
-		UserTO user = new UserTO();
-		user.setUserId(userTO.getUserId());
-		user.setUserPwd(userTO.getUserPwd());
-		user.setUserName(userTO.getUserName());
-		user.setUserPhone(userTO.getUserPhone());
-		user.setUserNickname(userTO.getUserNickname());
-		user.setUserAddr(userTO.getUserAddr());
+		UsersTO user = new UsersTO();
+		user.setUserId(usersTO.getUserId());
+		user.setUserPw(usersTO.getUserPw());
+		user.setUserName(usersTO.getUserName());
+		user.setUserPhone(usersTO.getUserPhone()); 
+		user.setParcelAddr(usersTO.getParcelAddr());
+		user.setRoadAddr(usersTO.getRoadAddr());
+		user.setRegionNo(usersTO.getRegionNo());
 		
 		dao.createUser(user);
 		
@@ -35,15 +36,15 @@ public class UserService {
 			
 	}
 	
-	public UserTO loginCheck(String userId, String userPwd) {
+	public UsersTO loginCheck(String userId, String userPwd) {
 			
-		UserTO user = dao.findUserForLogin(userId);
+		UsersTO user = dao.findUserForLogin(userId);
 	
 		if(user == null) {
 			return null;
 		}
 		
-		if(!user.getUserPwd().equals(userPwd)) {
+		if(!user.getUserPw().equals(userPwd)) {
 			return null;
 		}
 		
