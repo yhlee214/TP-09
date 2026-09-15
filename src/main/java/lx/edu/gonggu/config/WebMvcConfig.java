@@ -13,7 +13,7 @@ public class WebMvcConfig implements WebMvcConfigurer{
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new LoginCheckInterceptor())
 		.addPathPatterns("/**") // 모든 url에 적용을 하는데...
-		.excludePathPatterns("/login", "/signup", "/dupCheck"
+		.excludePathPatterns("/loginform", "/signupform", "/dupCheck"
 				,"/css/**", "/js/**", "/images/**"); // 로그인 없이도 접근 가능한 url
 		
 	}
