@@ -55,4 +55,8 @@ public class PartyService {
 		dao.deleteParty(partyNo);
 
 	}
+	
+	public List<PartyTO> getPartyListByUserNo(int userNo) {
+		return dao.getPartyListByUserNo(userNo);
+	}
 }
