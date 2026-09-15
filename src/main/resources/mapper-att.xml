@@ -10,5 +10,10 @@
 		from attendance 
 		where user_no = #{UserNo}
 	</select>
-
+ 
+	<delete id="deleteAtt" parameterType="int">
+		delete from Attendance
+		where att_no = #{attNo}
+	</delete>
+ 
 </mapper>
