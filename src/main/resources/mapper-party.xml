@@ -8,16 +8,16 @@
 		where user_no = #{userNo}
 	</select>
 	
-	<select id="getPartyList" resultType="lx.edu.gonggu.to.Party">
+	<select id="getPartyList" resultType="lx.edu.gonggu.to.PartyTO">
 		select * from party
 	</select>
 	
-	<select id="getPartyByPartyNo" parameterType="int" resultType="lx.edu.gonggu.to.Party">
+	<select id="getPartyByPartyNo" parameterType="int" resultType="lx.edu.gonggu.to.PartyTO">
 		select * from party
 		where party_no = #{partyNo}
 	</select>
 	
-	<insert id="createParty" parameterType="lx.edu.gonggu.to.Party">
+	<insert id="createParty" parameterType="lx.edu.gonggu.to.PartyTO">
 		insert into party(PARTY_TITLE, TARGET_QTY, SPLIT_DATETIME, SPLIT_ADDR
 					  ,SPLIT_PLACE, LONGITUDE, LATITUDE, PRODUCT_NAME
 					  , PRODUCT_CONTENT,PRODUCT_PRICE, PRODUCT_IMG
@@ -26,9 +26,9 @@
 					  , REGION_NO ) 
 		values (#{partyTitle}, #{targetQty}, #{splitDatetime}, #{splitAddr}
 					  , #{splitPlace}, #{longitude}, #{latitude}
-					  , #{longitude}, #{productName}, #{productContent}
+					  , #{productName}, #{productContent}
 					  , #{productPrice}, #{productImg}, #{partyEndDateTime}
-					  , #{accumQty}, "모집 중", #{partyDateTime}, #{recentUpdate}
+					  , #{accumQty}, '모집 중', #{partyDateTime}, #{recentUpdate}
 					  , #{maxQty}, #{userNo}, #{regionNo})
 	</insert>
 	
