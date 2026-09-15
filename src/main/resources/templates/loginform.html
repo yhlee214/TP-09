@@ -39,9 +39,7 @@
 <p th:if="${error != null}" th:text="${error}" class="error_msg"></p>
 
 <div>
-<form name="signup" method="get" th:action="@{/signup}">
-    <button type="submit" name="signup_btn">회원가입</button>
-</form>
+    <a th:href="@{/signupform}" class="signup_link">회원가입</a>
 </div>
 
 </div>

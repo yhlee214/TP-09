@@ -200,6 +200,18 @@ input[type="submit"] {
    03. 로그인
    ============================================================ */
    
+.page_login button[name="login_btn"] {
+    width: 100%;
+    padding: 12px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+}
+.page_login button[name="login_btn"]:hover { background: var(--seafoam-deep); }   
+   
 .page_login .main_img,
 .main_img {
     display: block;
@@ -292,17 +304,21 @@ input[type="submit"] {
     outline-offset: -1px;
 }
 
-.page_login button[name="login_btn"] {
+.page_login .signup_link {
+    display: block;
     width: 100%;
-    padding: 12px;
-    background: var(--seafoam);
-    border: none;
+    margin-top: 10px;
+    padding: 11px;
+    text-align: center;
+    background: transparent;
+    border: 1px solid rgba(79, 183, 154, 0.5);
     border-radius: 12px;
-    color: #fff;
-    font-size: 16px;
-    font-weight: 700;
+    color: var(--seafoam-deep);
+    font-size: 15px;
+    font-weight: 600;
+    box-sizing: border-box;
 }
-.page_login button[name="login_btn"]:hover { background: var(--seafoam-deep); }
+.page_login .signup_link:hover { background: rgba(255, 255, 255, 0.5); } 
 
 .page_login button[name="signup_btn"] {
     width: 100%;

@@ -16,7 +16,7 @@
 
 <h1> 회 원 가 입 </h1>
 
-<form name="signupjoin" method="post" th:action="@{/join}" id="signupjoin">
+<form name="signupjoin" method="post" th:action="@{/signup}" id="signupjoin">
 
 <div>
 
@@ -154,14 +154,13 @@ if(!/^[A-Za-z0-9]{4,12}$/.test(input_Id)) { //정규표현식 .test는 패턴에
     return
 }
 $.ajax({
-    type : "GET",                  // 조회이므로 GET
-    url : "/user/dupcheck",        // 백엔드와 맞출 것
-    dataType : 'json',
+    type : "POST",                  // 
+    url : "/dupCheck",        // 백엔드와 맞출 것
     data : {
-        userId : input_Id
+        id : input_Id
     },
-    success : function(response) { // 클라이언트에서 버튼 누르고 보냄 -> 컨트롤러에서 까보고 서비스로 보냄. 서비스에서 db랑 소통하여 있는지 확인 후 반대로 돌아옴
-        if(response.exists){
+    success : function(isDuplicate) { // 클라이언트에서 버튼 누르고 보냄 -> 컨트롤러에서 까보고 서비스로 보냄. 서비스에서 db랑 소통하여 있는지 확인 후 반대로 돌아옴
+        if(isDuplicate){
             alert(`이미 아이디가 있어요`);
             $("#input_userId").focus();
             return

@@ -15,4 +15,5 @@ public class AttendanceTO {
 	private int partyNo;
 	private int userNo;
 	private String userName;
+	private String partyTitle;
 }
