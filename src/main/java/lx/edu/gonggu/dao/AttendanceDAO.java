@@ -11,7 +11,7 @@ import lx.edu.gonggu.to.AttendanceTO;
 @Repository
 @RequiredArgsConstructor
 public class AttendanceDAO {
-	
+
 	private final SqlSession session;
 	
 	public int createAtt(AttendanceTO attto) {
@@ -23,16 +23,11 @@ public class AttendanceDAO {
 	}
 	
 	public List<AttendanceTO> getAttListByUserNo(int userNo) {
-		return session.selectList("getAttListByUserNo", userNo);
+		return session.selectList("mapper-att.getAttListByUserNo", userNo);
 	}
 	
 	public int deleteAtt(AttendanceTO attto) {
 		return session.delete("mapper-att.deleteAtt", attto);
 	}
 
-	private final SqlSession session;
-	
-	public List<AttendanceTO> getAttListByUserNo(int userNo) {
-		return session.selectList("getAttListByUserNo", userNo);
-	}
 }

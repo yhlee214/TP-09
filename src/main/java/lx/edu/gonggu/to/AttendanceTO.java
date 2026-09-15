@@ -1,6 +1,7 @@
 package lx.edu.gonggu.to;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 
@@ -9,7 +10,7 @@ public class AttendanceTO {
 
 	private int attNo;
 	private int attQty;
-	private Date attDateTime;
+	private LocalDateTime attDateTime;
 	private String attStatus;
 	private int partyNo;
 	private int userNo;

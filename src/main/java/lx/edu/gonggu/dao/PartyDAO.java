@@ -16,23 +16,23 @@ public class PartyDAO {
 	private final SqlSession session;
 	
 	public List<PartyTO> getPartyList () {
-		return session.selectList("getPartyList");
+		return session.selectList("mapper-party.getPartyList");
 	}
 	
 	public List<PartyTO> getPartyListByUserNo (int userNo) {
-		return session.selectList("getPartyListByUserNo", userNo);
+		return session.selectList("mapper-party.getPartyListByUserNo", userNo);
 	}
 	
 	public PartyTO getPartyByPartyNo (int partyNo) {
-		return session.selectOne("getPartyByPartyNo", partyNo);
+		return session.selectOne("mapper-party.getPartyByPartyNo", partyNo);
 	}
 	
 	public int createParty (PartyTO party) {
-		return session.insert("createParty", party);
+		return session.insert("mapper-party.createParty", party);
 	}
 	
 	public int deleteParty (int partyNo) {
-		return session.delete("deleteParty", partyNo);
+		return session.delete("mapper-party.deleteParty", partyNo);
 	}
 	
 }
