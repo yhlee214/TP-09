@@ -30,4 +30,9 @@ public class AttendanceDAO {
 		return session.delete("mapper-att.deleteAtt", attto);
 	}
 
+	private final SqlSession session;
+	
+	public List<AttendanceTO> getAttListByUserNo(int userNo) {
+		return session.selectList("getAttListByUserNo", userNo);
+	}
 }

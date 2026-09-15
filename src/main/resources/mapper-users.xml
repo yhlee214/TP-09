@@ -1,10 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="mapper-users">
-    <insert>
-        insert into 
-    
+    <insert id="createUser" parameterType="lx.edu.gonggu.to.UsersTO)">
+        insert into users(USER_ID, USER_PW, USER_NAME, USER_PHONE, PARCEL_ADDR, ROAD_ADDR, REGION_NO)
+        values (#{userId}, #{userPw}, #{userName}, #{userPhone}, #{parcelAddr}, #{rodeAddr}, #{regionNo})
     </insert>
-
+    
+	<select id="findByUserId" parameterType="String" resultType="lx.edu.gonggu.to.UsersTO">
+		select userId
+		from users
+		where userId = #{userId}
+	</select>
+	
+	<select id="findUserForLogin" parameterType="String" resultType="lx.edu.gonggu.to.UsersTO">
+		select userId, userPw
+		from users
+		where userId = #{userId}
+	</select>
+	
+	<select id="getUserInfoForMyPage" parameterType="int" resultType="lx.edu.gonggu.to.UsersTO">
+		select userId, userName, userPhone, parcelAddr, rodeAddr
+		from users
+		where userNo = #{userNO}
+	</select>
 </mapper>
 
