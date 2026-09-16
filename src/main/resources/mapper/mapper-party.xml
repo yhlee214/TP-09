@@ -43,4 +43,13 @@
 	
 	</update>
 	
+	<!-- 누적수량이 목표수량에 도달하면 모집완료로 (PartyDAO.closePartyIfFull 이 호출) -->
+	<update id="closePartyIfFull" parameterType="int">
+		update party
+		set party_status = '모집완료'
+		where party_no = #{partyNo}
+		  and accum_qty >= target_qty
+		  and party_status != '모집완료'
+	</update>
+
 </mapper>
