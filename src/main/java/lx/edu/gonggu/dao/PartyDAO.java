@@ -37,6 +37,10 @@ public class PartyDAO {
 		return session.delete("mapper-party.deleteParty", partyNo);
 	}
 	
+	public int closePartyIfFull(int partyNo) {
+		return session.update("mapper-party.closePartyIfFull", partyNo);
+	}
+	
 	public int increaseAccumQty(int partyNo, int qty) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("partyNo", partyNo);

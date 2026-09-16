@@ -64,6 +64,7 @@ public class AttendanceService {
 		
 		dao.updateAttStatus(attNo, "승인");
 		partyDao.increaseAccumQty(att.getPartyNo(), att.getAttQty());
+		partyDao.closePartyIfFull(att.getPartyNo());	// 목표수량 채워지면 모집완료로
 	}
 	
 	public void rejectAtt(int attNo, int partyOwnerUserNo) {
