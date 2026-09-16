@@ -42,9 +42,9 @@ public class AttendanceDAO {
 	
 	public int updateAttStatus(int attNo, String status) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("attno", attNo);
+		params.put("attNo", attNo);
 		params.put("status", status);
-		return session.update("updateAttStatus",params);
+		return session.update("mapper-att.updateAttStatus",params);
 	}
 
 }

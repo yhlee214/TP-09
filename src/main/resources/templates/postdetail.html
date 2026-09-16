@@ -7,6 +7,40 @@
     <meta charset="UTF-8">
     <title>글 상세</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* 댓글 수정 폼 : 카드 안쪽에 들어가도록 (style.css 의 absolute 규칙을 덮어씀) */
+        .comment > div.reply_item form.reply_edit_form {
+            position: static;
+            display: block;
+            margin: 8px 0 0;
+        }
+        .comment > div.reply_item form.reply_edit_form textarea {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 52px;
+            height: 52px;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid var(--line);
+            resize: vertical;
+        }
+        .comment > div.reply_item form.reply_edit_form .reply_edit_actions {
+            position: static;
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            margin-top: 6px;
+        }
+        .comment > div.reply_item .reply_actions {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            display: flex;
+            gap: 6px;
+        }
+        .comment > div.reply_item .reply_actions form { position: static; }
+    </style>
 </head>
 
 <body class="page_detail">
@@ -81,20 +115,49 @@
 
         <p th:if="${replyList == null or replyList.isEmpty()}">첫 댓글을 남겨보세요.</p>
 
-        <div th:each="r : ${replyList}">
+        <div class="reply_item" th:each="r : ${replyList}">
             <p><span th:text="${r.userName}">작성자</span> · <span th:text="${r.replyDateTime != null} ? ${#temporals.format(r.replyDateTime,'yyyy-MM-dd HH:mm')} : ''">작성일</span></p>
-            <p th:text="${r.replyContent}">댓글 내용</p>
+            <p class="reply_text" th:text="${r.replyContent}">댓글 내용</p>
 
-            <form th:action="@{/comment/delete}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?')">
+            <!-- 댓글 수정 폼 : 기본 숨김, [수정] 누르면 나타남 -->
+            <form class="reply_edit_form" th:action="@{/comment/edit}" method="post" style="display:none">
                 <input type="hidden" name="replyNo" th:value="${r.replyNo}">
                 <input type="hidden" name="partyNo" th:value="${party.partyNo}">
-                <button type="submit">삭제</button>
+                <textarea name="replyContent" rows="2" th:text="${r.replyContent}"></textarea>
+                <div class="reply_edit_actions">
+                    <button type="submit">저장</button>
+                    <button type="button" class="reply_edit_cancel">취소</button>
+                </div>
             </form>
+
+            <div class="reply_actions">
+                <button type="button" class="reply_edit_btn"
+                        th:if="${session.loginUser != null and session.loginUser.userNo == r.userNo}">수정</button>
+                <form th:action="@{/comment/delete}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?')">
+                    <input type="hidden" name="replyNo" th:value="${r.replyNo}">
+                    <input type="hidden" name="partyNo" th:value="${party.partyNo}">
+                    <button type="submit">삭제</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <script type="text/javascript">
         $(function () {
+            // 댓글 수정 : 본문 감추고 수정 폼 보이기
+            $(document).on("click", ".reply_edit_btn", function () {
+                let box = $(this).closest(".reply_item");
+                box.find(".reply_text").hide();
+                box.find(".reply_actions").hide();
+                box.find(".reply_edit_form").show();
+            });
+            $(document).on("click", ".reply_edit_cancel", function () {
+                let box = $(this).closest(".reply_item");
+                box.find(".reply_edit_form").hide();
+                box.find(".reply_text").show();
+                box.find(".reply_actions").show();
+            });
+
             let price = parseInt($("#unitPrice").val()) || 0; // 앞이 false면 뒤(0)를 price 에 넣음.
 
             // 타임리프는 서버에서 한 번만 실행되므로 실시간 계산은 JS 가 함

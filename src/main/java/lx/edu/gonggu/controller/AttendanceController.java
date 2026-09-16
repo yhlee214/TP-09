@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -30,8 +29,8 @@ public class AttendanceController {
 		return "redirect:/post/detail?partyNo="+attTo.getPartyNo();
 	}
 	
-	@PostMapping("/apply/{no}")
-	public String deleteAttendance(@PathVariable("no") int attNo, HttpSession session) {
+	@PostMapping("/apply/cancel")
+	public String deleteAttendance(@RequestParam("attNo") int attNo, HttpSession session) {
 		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
 		
 		int partyNo = service.deleteAtt(attNo, loginUser.getUserNo());
@@ -40,7 +39,7 @@ public class AttendanceController {
 	}
 	
 	@PostMapping("/apply/approve")
-	public String approve(@PathVariable("no") int attNo, HttpSession session) {
+	public String approve(@RequestParam("attNo") int attNo, HttpSession session) {
 		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
 		service.approveAtt(attNo, loginUser.getUserNo());
 		
@@ -48,7 +47,7 @@ public class AttendanceController {
 	}
 	
 	@PostMapping("/apply/reject")
-	public String reject(@PathVariable("no") int attNo, HttpSession session) {
+	public String reject(@RequestParam("attNo") int attNo, HttpSession session) {
 		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
 		service.rejectAtt(attNo, loginUser.getUserNo());
 		

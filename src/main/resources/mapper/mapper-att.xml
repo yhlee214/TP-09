@@ -4,9 +4,9 @@
 
 	<insert id="createAtt"
 		parameterType="lx.edu.gonggu.to.AttendanceTO">
-		insert into attendance (att_qty, att_datetime, party_no,
+		insert into attendance (att_qty, att_datetime, att_status, party_no,
 		user_no)
-		values (#{attQty}, now(), #{partyNo}, #{userNo})
+		values (#{attQty}, now(), '대기', #{partyNo}, #{userNo})
 	</insert>
 
 	<select id="getAttListByUserNo" parameterType="int"
