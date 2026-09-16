@@ -3,7 +3,7 @@
 <mapper namespace="mapper-users">
     <insert id="createUser" parameterType="lx.edu.gonggu.to.UsersTO">
         insert into users(USER_ID, USER_PW, USER_NAME, USER_PHONE, PARCEL_ADDR, ROAD_ADDR, REGION_NO)
-        values (#{userId}, #{userPw}, #{userName}, #{userPhone}, #{parcelAddr}, #{roadAddr}, #{regionNo})
+        values (#{userId}, #{userPw}, #{userName}, #{userPhone}, #{parcelAddr}, #{roadAddr}, 3)
     </insert>
     
 	<select id="findByUserId" parameterType="String" resultType="String">
