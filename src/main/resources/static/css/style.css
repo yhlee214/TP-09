@@ -1,0 +1,1420 @@
+@charset "UTF-8";
+
+/* ============================================================
+   공구 사이트 스타일시트
+
+   [사용법] 각 HTML 의 <body> 에 아래 class 를 붙이세요.
+     로그인      <body class="page_login">
+     회원가입    <body class="page_signup">
+     목록        <body class="page_list">
+     글 상세     <body class="page_detail">
+     작성/수정   <body class="page_form">
+     마이페이지  <body class="page_mypage">
+
+   [목차]
+     00. 색·크기 변수
+     01. 공통 기본값
+     02. 헤더        (목록 / 상세 / 마이페이지)
+     03. 로그인
+     04. 회원가입
+     05. 목록 카드
+     06. 모달        (지역 / 알림)
+     07. 글 상세
+     08. 신청 폼
+     09. 댓글
+     10. 작성 / 수정 폼
+     11. 마이페이지
+     12. 모바일
+   ============================================================ */
+
+
+/* ============================================================
+   00. 색·크기 변수
+   ============================================================ */
+
+:root {
+    --seafoam:        #4FB79A;   /* 메인 - 버튼, 강조 */
+    --seafoam-deep:   #3A9480;   /* 호버 */
+    --seafoam-light:  #D6F0E7;   /* 옅은 배경 */
+    --bg:             #FCEFE3;   /* 배경 - 연한 살구 */
+    --card:           #FFFFFF;
+    --line:           #EADDD2;
+    --text:           #2F3A36;
+    --text-sub:       #7E8B86;
+
+    --status-open:    #2E9E6B;
+    --status-soon:    #D94F4F;
+    --status-closed:  #9AA3A0;
+
+    --radius:         14px;
+    --header-h:       64px;
+}
+
+
+/* ============================================================
+   01. 공통 기본값
+   ============================================================ */
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Pretendard", "Malgun Gothic", "맑은 고딕", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+a { text-decoration: none; color: inherit; }
+
+button,
+input[type="button"],
+input[type="submit"] {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* 상태 뱃지 */
+.status_open,
+.status_soon,
+.status_closed {
+    display: inline-block;
+    padding: 3px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 999px;
+}
+.status_open   { background: #DFF3E8; color: var(--status-open); }
+.status_soon   { background: #FBE4E4; color: var(--status-soon); }
+.status_closed { background: #ECEEED; color: var(--status-closed); }
+
+/* 오류 문구 */
+.error_msg {
+    margin: 10px 0 0;
+    padding: 10px 14px;
+    background: #FBE4E4;
+    border-radius: 8px;
+    color: var(--status-soon);
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   02. 헤더 - 목록 / 상세 / 마이페이지에서만
+   ============================================================ */
+
+.page_list,
+.page_detail,
+.page_mypage { padding-top: var(--header-h); }
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-h);
+    background: rgba(252, 239, 227, 0.94);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 500;
+}
+
+.top_left_menu {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--seafoam-deep);
+    letter-spacing: -0.02em;
+}
+
+.top_center_menu { flex: 0 0 auto; }
+
+#Location_services {
+    background: var(--card);
+    border: 1.5px solid var(--seafoam);
+    border-radius: 999px;
+    padding: 8px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--seafoam-deep);
+    transition: background 0.15s;
+}
+#Location_services:hover { background: var(--seafoam-light); }
+#Location_services::before { content: "📍"; margin-right: 6px; }
+
+.top_right_menu {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.top_right_menu input[type="button"],
+.top_right_menu button {
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--text-sub);
+    border-radius: 8px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.top_right_menu input[type="button"]:hover,
+.top_right_menu button:hover {
+    color: var(--seafoam-deep);
+    background: var(--seafoam-light);
+}
+
+/* 알림 뱃지 */
+#alarm { position: relative; }
+
+#alarm_count {
+    display: inline-block;
+    min-width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    padding: 0 5px;
+    background: var(--status-soon);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    border-radius: 999px;
+}
+
+
+/* ============================================================
+   03. 로그인
+   ============================================================ */
+   
+.page_login button[name="login_btn"] {
+    width: 100%;
+    padding: 12px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+}
+.page_login button[name="login_btn"]:hover { background: var(--seafoam-deep); }   
+   
+.page_login .main_img,
+.main_img {
+    display: block;
+    width: 260px;          /* 이 숫자로 조절 */
+    height: auto;
+    margin: 0 auto 8px;
+    mix-blend-mode: multiply;
+}   
+   
+   
+   
+.page_login .page_button {
+    position: fixed;
+    top: 24px;
+    left: 32px;
+    margin: 0;
+    z-index: 100;
+}
+
+.button_img {
+    display: block;
+    height: 70px;
+    width: auto;
+    mix-blend-mode: multiply;
+}
+
+.button_img {
+    display: block;
+    height: 105px;
+    width: auto;
+    mix-blend-mode: multiply;
+}
+
+.header .logo_img { height: 34px; }
+
+.page_login {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 카드 위 제목 - 카드와 약 5mm 간격 */
+.page_login h3 {
+    margin: 0 0 19px;
+    font-size: 27px;
+    font-weight: 700;
+    color: var(--seafoam-deep);
+}
+
+.page_login .center_box {
+    width: 450px;
+    height: 300px;
+    padding: 34px 40px;
+
+    /* 투명한 시폼 그린 카드 */
+    background: rgba(147, 233, 190, 0.22);
+    border: 1px solid rgba(79, 183, 154, 0.45);
+    border-radius: 24px;
+    backdrop-filter: blur(6px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.page_login label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--seafoam-deep);
+}
+
+.page_login input[type="text"],
+.page_login input[type="password"] {
+    width: 100%;
+    padding: 11px 14px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    font-family: inherit;
+    border: 1px solid rgba(79, 183, 154, 0.4);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.75);
+}
+
+.page_login input:focus {
+    outline: 2px solid var(--seafoam);
+    outline-offset: -1px;
+}
+
+.page_login .signup_link {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+    text-align: center;
+    background: transparent;
+    border: 1px solid rgba(79, 183, 154, 0.5);
+    border-radius: 12px;
+    color: var(--seafoam-deep);
+    font-size: 15px;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+.page_login .signup_link:hover { background: rgba(255, 255, 255, 0.5); } 
+
+.page_login button[name="signup_btn"] {
+    width: 100%;
+    margin-top: 10px;
+    padding: 11px;
+    background: transparent;
+    border: 1px solid rgba(79, 183, 154, 0.5);
+    border-radius: 12px;
+    color: var(--seafoam-deep);
+    font-size: 15px;
+    font-weight: 600;
+}
+.page_login button[name="signup_btn"]:hover { background: rgba(255, 255, 255, 0.5); }
+
+
+/* ============================================================
+   04. 회원가입
+   ============================================================ */
+.page_signup .page_button {
+    position: fixed;
+    top: 24px;
+    left: 32px;
+    margin: 0;
+    z-index: 100;
+}
+
+
+.page_signup h1 {
+    max-width: 680px;
+    margin: 40px auto 19px;
+    padding: 0 20px;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--seafoam-deep);
+}
+
+.page_signup #signupjoin {
+    max-width: 680px;
+    margin: 0 auto 60px;
+    padding: 36px 44px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 0;
+}
+
+.page_signup h3 {
+    margin: 30px 0 10px;
+    font-size: 16px;
+}
+.page_signup h3:first-of-type { margin-top: 0; }
+
+/* 약관 - 흰 배경, 각진 테두리 */
+.page_signup textarea {
+    width: 100%;
+    height: 160px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    background: var(--card);
+    color: var(--text-sub);
+    resize: none;
+}
+
+/* 약관 묶음 아래 간격 */
+.page_signup #signupjoin > div > div {
+    margin-bottom: 26px;
+}
+
+/* 입력이 들어있는 줄은 전부 가로 배치 */
+.page_signup #signupjoin div:has(> input[type="text"]),
+.page_signup #signupjoin div:has(> input[type="password"]) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* 라벨 폭 고정 → 입력칸 오른쪽 끝이 전부 맞음 */
+.page_signup .f_label {
+    flex: 0 0 120px;
+    font-size: 14px;
+    color: var(--text-sub);
+}
+
+/* 주소 4줄은 라벨이 없으므로 라벨 폭만큼 밀어줌 */
+.page_signup #signupjoin > div > div > div > div {
+    margin-left: 130px;
+}
+
+.page_signup #signupjoin input[type="text"],
+.page_signup #signupjoin input[type="password"] {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    background: var(--card);
+}
+
+.page_signup input:focus {
+    outline: 2px solid var(--seafoam);
+    outline-offset: -1px;
+}
+
+.page_signup input[readonly] {
+    background: var(--bg);
+    color: var(--text-sub);
+}
+
+/* 우편번호는 짧게 */
+.page_signup #postcode { flex: 0 0 160px; }
+
+/* 중복확인 · 우편번호 찾기 */
+.page_signup input[type="button"] {
+    flex: 0 0 auto;
+    padding: 11px 16px;
+    background: var(--seafoam-light);
+    border: 1px solid var(--seafoam);
+    border-radius: 0;
+    color: var(--seafoam-deep);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.page_signup input[type="button"]:hover {
+    background: var(--seafoam);
+    color: #fff;
+}
+
+/* 체크박스 */
+.page_signup input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    margin-left: 4px;
+    vertical-align: middle;
+    accent-color: var(--seafoam);
+}
+
+.page_signup #join_membership {
+    width: 100%;
+    margin-top: 28px;
+    padding: 15px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 0;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+}
+.page_signup #join_membership:hover { background: var(--seafoam-deep); }
+
+/* ============================================================
+   05. 목록 카드
+   ============================================================ */
+
+.page_detail .page_button,
+.page_form .page_button,
+.page_mypage .page_button {
+    position: fixed;
+    top: 24px;
+    left: 32px;
+    margin: 0;
+    z-index: 100;
+}
+
+.button_img {
+    display: block;
+    height: 80px;
+    width: auto;
+    mix-blend-mode: multiply;
+}
+
+/* 헤더 안에서는 더 작게 */
+.header .button_img {
+    height: 65px;
+}
+
+.post_card_list {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 120px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.post_card {
+    display: grid;
+    grid-template-columns: 1fr 110px;
+    grid-template-areas:
+        "top  img"
+        "mid  img"
+        "bot  bot";
+    gap: 4px 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px;
+    transition: border-color 0.15s, transform 0.15s;
+}
+
+.post_card:hover {
+    border-color: var(--seafoam);
+    transform: translateY(-2px);
+}
+
+.post_card p { margin: 0; }
+
+/* 제목 / 작성자 / 작성일 */
+.post_card_top_center { grid-area: top; min-width: 0; }
+
+.post_card_top_center h3 {
+    margin: 2px 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;      /* 제목 2줄까지만 */
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.post_card_top_center p:first-child {
+    font-size: 12px;
+    color: var(--text-sub);
+}
+
+.post_card_top_center p:nth-child(3),
+.post_card_top_center p:nth-child(4) {
+    display: inline;
+    font-size: 13px;
+    color: var(--text-sub);
+}
+
+.post_card_top_center p:nth-child(3)::after {
+    content: "·";
+    margin: 0 6px;
+    color: var(--line);
+}
+
+/* 이미지 */
+.post_card_top_right {
+    grid-area: img;
+    width: 110px;
+    height: 110px;
+    background: var(--seafoam-light);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text-sub);
+}
+
+.post_card_top_right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.post_card_top_right:empty::after {
+    content: "이미지 없음";
+}
+
+/* 물품명 / 수량 / 가격 */
+.post_card_center {
+    grid-area: mid;
+    align-self: end;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    font-size: 14px;
+}
+
+.post_card_center p:nth-child(1) {
+    width: 100%;
+    color: var(--text-sub);
+}
+
+.post_card_center p:nth-child(2) {
+    font-weight: 700;
+    color: var(--seafoam-deep);
+}
+
+.post_card_center p:nth-child(3) { font-weight: 600; }
+
+.post_card_center p:nth-child(3)::after {
+    content: "원";
+    font-weight: 400;
+    font-size: 13px;
+    margin-left: 1px;
+}
+
+/* 상태 */
+.post_card_bottom {
+    grid-area: bot;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 글이 하나도 없을 때 */
+.post_card_list:empty::before {
+    content: "이 지역에는 아직 공구 글이 없습니다. 첫 글을 올려보세요.";
+    grid-column: 1 / -1;
+    padding: 80px 0;
+    text-align: center;
+    color: var(--text-sub);
+}
+
+/* 글쓰기 버튼 - 스크롤해도 떠 있음 */
+#Post {
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    padding: 14px 28px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(79, 183, 154, 0.4);
+    transition: background 0.15s, transform 0.15s;
+    z-index: 400;
+}
+
+#Post:hover {
+    background: var(--seafoam-deep);
+    transform: translateY(-2px);
+}
+
+
+/* ============================================================
+   06. 모달 - 지역 선택 / 알림
+   ============================================================ */
+
+#region_modal,
+#alarm_modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--card);
+    border-radius: 18px;
+    padding: 28px;
+    min-width: 340px;
+    max-width: 90vw;
+    box-shadow: 0 20px 50px rgba(47, 58, 54, 0.22);
+    z-index: 1000;
+}
+
+#region_modal select {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 11px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+
+#region_modal button,
+#alarm_modal button {
+    padding: 10px 18px;
+    margin: 8px 6px 0 0;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--text-sub);
+    transition: background 0.15s;
+}
+
+#region_modal button:hover,
+#alarm_modal button:hover { background: var(--bg); }
+
+#region_apply {
+    background: var(--seafoam);
+    border-color: var(--seafoam);
+    color: #fff;
+}
+#region_apply:hover { background: var(--seafoam-deep); }
+
+#use_gps {
+    color: var(--seafoam-deep);
+    border-color: var(--seafoam);
+}
+
+/* 알림 모달 */
+#alarm_modal { min-width: 380px; }
+
+.alarm_card_list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 8px;
+}
+
+.alarm_card {
+    padding: 14px;
+    margin-bottom: 8px;
+    background: var(--bg);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.alarm_card:hover { background: var(--seafoam-light); }
+
+.alarm_card_new {
+    background: var(--seafoam-light);
+    border-left: 3px solid var(--seafoam);
+}
+
+.alarm_card_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.alarm_card_top p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-sub);
+}
+
+.alarm_card_top p:first-child {
+    font-weight: 700;
+    color: var(--seafoam-deep);
+}
+
+.alarm_card_center p { margin: 0; font-size: 14px; }
+
+
+/* ============================================================
+   07. 글 상세
+   ============================================================ */
+
+.post_detail {
+    max-width: 720px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+}
+
+/* --- 제목 영역 --- */
+.post_detail_header {
+    position: relative;
+    padding: 30px 32px 24px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-bottom: none;
+}
+
+.post_detail_header > p:first-child {
+    display: inline-block;
+    margin: 0 0 10px;
+    padding: 2px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-sub);
+    background: var(--bg);
+    letter-spacing: 0.04em;
+}
+.post_detail_header > p:first-child::before { content: "#"; }
+
+.post_detail_header h2 {
+    margin: 0 0 10px;
+    padding-right: 90px;      /* 삭제 버튼 자리 */
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.post_detail_header > p:nth-of-type(2) {
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--text-sub);
+}
+
+/* 상태 + 수정 버튼 */
+.post_detail .post_card_bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.post_detail .post_card_bottom p {
+    display: inline-block;
+    margin: 0;
+    padding: 4px 14px;
+    background: var(--seafoam-light);
+    color: var(--status-open);
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 999px;
+}
+
+.post_detail #editpost {
+    padding: 5px 13px;
+    font-size: 13px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-sub);
+}
+.post_detail #editpost:hover {
+    border-color: var(--seafoam);
+    color: var(--seafoam-deep);
+}
+
+/* 삭제 버튼 - 오른쪽 위 */
+.post_detail_header form {
+    position: absolute;
+    top: 28px;
+    right: 32px;
+}
+
+.post_detail_header form button {
+    padding: 6px 14px;
+    font-size: 13px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-sub);
+}
+.post_detail_header form button:hover {
+    border-color: var(--status-soon);
+    color: var(--status-soon);
+}
+
+.post_detail_content img {
+    display: block;
+    width: 100%;
+    max-width: 380px;
+    margin: 18px auto 22px;
+    border: 1px solid var(--line);
+}
+
+/* --- 본문 정보 --- */
+.post_detail_content {
+    padding: 8px 32px 26px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-top: none;
+    border-bottom: none;
+}
+
+.post_detail_content p {
+    display: flex;
+    align-items: baseline;
+    margin: 0;
+    padding: 13px 0;
+    font-size: 15px;
+    border-top: 1px dashed var(--line);
+}
+
+/* 콜론 앞 라벨 폭 고정 → 값이 세로로 정렬됨 */
+.post_detail_content p span {
+    font-weight: 700;
+    margin-left: auto;
+}
+
+/* --- 거래 장소 --- */
+.trade_place {
+    padding: 22px 32px 30px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-top: none;
+}
+
+.trade_place > p:first-child {
+    margin: 0 0 2px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.trade_place > p:nth-child(2) {
+    margin: 0 0 14px;
+    font-size: 13px;
+    color: var(--text-sub);
+}
+
+#map {
+    border: 1px solid var(--line);
+}
+
+
+/* ============================================================
+   08. 신청 폼
+   ============================================================ */
+
+#applyform {
+    max-width: 720px;
+    margin: 22px auto 0;
+    padding: 0 20px;
+}
+
+.applyform {
+    padding: 26px 32px;
+    background: var(--card);
+    border: 2px solid var(--seafoam);
+}
+
+.applyform p {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 9px;
+    font-size: 14px;
+    color: var(--text-sub);
+}
+.applyform p span { color: var(--text); font-weight: 600; }
+
+.applyform label {
+    display: block;
+    margin: 18px 0 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.applyform input[type="number"] {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    text-align: center;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    background: var(--bg);
+}
+
+/* 총 금액 줄 강조 */
+.applyform p:has(#totalprice) {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 700;
+}
+
+#totalprice {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--seafoam-deep);
+}
+#totalprice::after { content: "원"; font-size: 15px; margin-left: 2px; }
+
+#applyform > button[type="submit"] {
+    width: 100%;
+    margin-top: 0;
+    padding: 16px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 0;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+}
+#applyform > button[type="submit"]:hover { background: var(--seafoam-deep); }
+
+
+/* ============================================================
+   09. 댓글
+   ============================================================ */
+
+.comment {
+    max-width: 720px;
+    margin: 30px auto 80px;
+    padding: 0 20px;
+}
+
+.comment > form:first-child {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    margin-bottom: 22px;
+}
+
+.comment textarea {
+    flex: 1;
+    min-height: 76px;
+    padding: 13px;
+    font-family: inherit;
+    font-size: 15px;
+    border: 1px solid var(--line);
+    border-right: none;
+    border-radius: 0;
+    background: var(--card);
+    color: var(--text);
+    resize: vertical;
+}
+
+.comment > form:first-child button {
+    flex: 0 0 76px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 0;
+    color: #fff;
+    font-weight: 700;
+}
+.comment > form:first-child button:hover { background: var(--seafoam-deep); }
+
+/* 댓글 한 건 */
+.comment > div {
+    position: relative;
+    padding: 16px 18px;
+    margin-bottom: 8px;
+    background: var(--card);
+    border: 1px solid var(--line);
+}
+
+.comment > div > p:first-child {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-sub);
+}
+
+.comment > div > p:nth-child(2) {
+    margin: 0;
+    padding-right: 120px;
+    font-size: 15px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* 수정·삭제를 오른쪽에 가로로 */
+.comment > div > div,
+.comment > div form {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+}
+.comment > div > div { right: 72px; }
+
+.comment > div button,
+.comment > div input[type="button"] {
+    padding: 4px 10px;
+    font-size: 12px;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    color: var(--text-sub);
+}
+
+.comment > div form button:hover {
+    border-color: var(--status-soon);
+    color: var(--status-soon);
+}
+
+.comment > div:empty { display: none; }
+
+/* ============================================================
+   10. 작성 / 수정 폼
+   ============================================================ */
+ 
+ .page_form .page_button{
+    position: fixed;
+    top: 24px;
+    left: 32px;
+    margin: 0;
+    z-index: 100;
+}
+ 
+ .page_button .button_img {
+    display: block;
+    height: 80px;
+    width: auto;
+    mix-blend-mode: multiply;
+}
+ 
+ 
+.page_form h1 {
+    max-width: 720px;
+    margin: 40px auto 19px;
+    padding: 0 20px;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--seafoam-deep);
+    text-align: center;
+}
+
+/* h1 이 생겼으니 폼 위 여백은 줄임 */
+.page_form #post_form {
+    max-width: 720px;
+    margin: 0 auto 60px;
+    padding: 36px 44px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 0;
+}
+
+.page_form #post_form > div { margin-bottom: 18px; }
+
+.page_form label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-sub);
+}
+
+.page_form input[type="text"],
+.page_form input[type="number"],
+.page_form input[type="date"],
+.page_form input[type="datetime-local"],
+.page_form select {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+}
+
+.page_form input:focus,
+.page_form select:focus,
+.page_form textarea:focus {
+    outline: 2px solid var(--seafoam);
+    outline-offset: -1px;
+}
+
+.page_form textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 15px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+    resize: vertical;
+}
+
+.page_form input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    background: var(--card);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+}
+
+/* 기존 이미지 미리보기 (수정 폼) */
+.page_form img {
+    display: block;
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+/* 거래 장소 - 입력칸이 남는 폭을 채우고 버튼이 오른쪽 끝 */
+.page_form #post_form > div:has(> #search_place) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+/* 라벨은 한 줄 전체 차지 */
+.page_form #post_form > div:has(> #search_place) label {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+}
+
+.page_form #keyword {
+    width: 100%;
+}
+
+.page_form #search_place {
+    padding: 11px 22px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.page_form #search_place:hover { background: var(--seafoam-deep); }
+
+/* 검색 결과 목록 */
+#place_list {
+    list-style: none;
+    margin: 8px 0 14px;
+    padding: 0;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+#place_list:not(:empty) {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+}
+
+.place_item {
+    padding: 11px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--line);
+}
+.place_item:last-child { border-bottom: none; }
+.place_item:hover { background: var(--seafoam-light); }
+
+.page_form #post_form > button[type="submit"] {
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    background: var(--seafoam);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+}
+.page_form #post_form > button[type="submit"]:hover { background: var(--seafoam-deep); }
+
+
+/* ============================================================
+   11. 마이페이지
+   ============================================================ */
+
+.page_mypage h1 {
+    margin: 0 0 24px;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--seafoam-deep);
+    text-align: center;
+}
+
+.my_page {
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 0 20px 80px;
+}
+
+.my_page h2 { margin: 0 0 4px; font-size: 26px; }
+
+.my_page > p { margin: 0 0 28px; color: var(--text-sub); }
+.my_page > p span { font-weight: 700; color: var(--text); }
+
+.my_section {
+    margin-bottom: 32px;
+    padding: 22px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.my_section h3 {
+    margin: 0 0 14px;
+    padding-bottom: 12px;
+    font-size: 17px;
+    border-bottom: 2px solid var(--seafoam-light);
+}
+
+/* 항목이 없을 때 */
+.my_section > p {
+    margin: 0;
+    padding: 20px 0;
+    text-align: center;
+    color: var(--text-sub);
+    font-size: 14px;
+}
+
+.my_item {
+    position: relative;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+}
+.my_item:last-child { border-bottom: none; }
+
+.my_item a { font-weight: 600; color: var(--text); }
+.my_item a:hover { color: var(--seafoam-deep); }
+
+.my_item span {
+    display: inline-block;
+    margin-right: 12px;
+    font-size: 13px;
+    color: var(--text-sub);
+}
+
+.my_item p { margin: 0 0 4px; font-size: 14px; }
+
+.my_item form {
+    display: inline-block;
+    margin: 8px 6px 0 0;
+}
+
+.my_item form button {
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--text-sub);
+}
+
+/* 승인만 초록 - 버튼에 class="btn_approve" 를 붙이세요 */
+.my_item .btn_approve {
+    background: var(--seafoam);
+    border-color: var(--seafoam);
+    color: #fff;
+}
+.my_item .btn_approve:hover { background: var(--seafoam-deep); }
+
+.my_item .btn_reject:hover,
+.my_item .btn_cancel:hover {
+    border-color: var(--status-soon);
+    color: var(--status-soon);
+}
+
+
+/* ============================================================
+   12. 모바일
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .header { padding: 0 14px; }
+    .logo { font-size: 17px; }
+
+    #Location_services { padding: 7px 14px; font-size: 14px; }
+
+    .top_right_menu input[type="button"],
+    .top_right_menu button { padding: 6px 8px; font-size: 13px; }
+
+    /* 로그인 카드 */
+    .page_login .center_box {
+        width: calc(100vw - 32px);
+        height: auto;
+        min-height: 280px;
+        padding: 28px 24px;
+    }
+    .page_login h3 { font-size: 23px; }
+
+    .page_signup #signupjoin { padding: 22px; margin: 20px 14px; }
+
+    .post_card_list {
+        grid-template-columns: 1fr;
+        padding: 20px 14px 110px;
+    }
+
+    #Post { right: 18px; bottom: 18px; padding: 12px 22px; }
+
+    #region_modal,
+    #alarm_modal {
+        min-width: 0;
+        width: calc(100vw - 32px);
+        padding: 22px;
+    }
+
+    .post_detail,
+    .my_page,
+    #applyform,
+    .comment,
+    .page_form #post_form {
+    margin: 20px 14px 40px;
+    padding: 22px;
+	}
+
+    .post_detail_header h2 { font-size: 21px; }
+    .post_detail_header form { position: static; margin-top: 10px; }
+
+    .comment > form:first-child { flex-direction: column; }
+    .comment > form:first-child button { width: 100%; }
+
+    .page_form #keyword { width: 100%; }
+    .page_form #search_place { width: 100%; margin: 8px 0 0; }
+    .page_form img { width: 120px; height: 120px; }
+}
+
+
+/* 접근성 - 모션 줄이기 설정 존중 */
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}

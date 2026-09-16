@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> <!-- 타임리프를 적용시켜주는 친구 -->
+<!-- 서버에서 html을 만들어서 보내주는 템플릿 엔진! jsp를 대체합니다. -->
+<!-- 스프링 부트에서 html을 쓰는 이유는 부트에서는 자체 서버 구동을 하는데 스프링 내부 서버실행기가 jsp에 자바 변환을 지원하지 않음. -->
+<!-- JSTL은 JSP 엔진이 처리하는 태그라서 JSP 파일에서만 동작함. 타임리프는 그 역할을 대신하는 별도 엔진. -->
+
+<head>
+<meta charset="UTF-8">
+<title> login </title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body class="page_login">
+
+<img th:src="@{/images/logo.png}" alt="메인 로고" class="main_img">
+
+<a th:href="@{/login}" class="page_button">
+    <img th:src="@{/images/logo2.png}" alt="동네공구" class="button_img">
+</a>
+
+<h3> 로그인 </h3>
+
+<div class="center_box">
+
+<form name="login" method="post" th:action="@{/login}">
+<div>
+    <label class="Id_label" for="userId">아이디</label>
+    <input type="text" name="userId" id="userId">
+</div>
+<div>
+    <label class="pw_label" for="userPw">비밀번호</label>
+    <input type="password" name="userPw" id="userPw">
+</div>
+<div>
+    <button type="submit" name="login_btn">로그인</button>
+</div>
+</form>
+
+<p th:if="${error != null}" th:text="${error}" class="error_msg"></p>
+
+<div>
+    <a th:href="@{/signupform}" class="signup_link">회원가입</a>
+</div>
+
+</div>
+</body>
+</html>
