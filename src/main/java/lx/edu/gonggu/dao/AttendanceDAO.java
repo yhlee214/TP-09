@@ -1,6 +1,8 @@
 package lx.edu.gonggu.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
@@ -26,8 +28,23 @@ public class AttendanceDAO {
 		return session.selectList("mapper-att.getAttListByUserNo", userNo);
 	}
 	
-	public int deleteAtt(AttendanceTO attto) {
-		return session.delete("mapper-att.deleteAtt", attto);
+	public int deleteAtt(int atNo) {
+		return session.delete("mapper-att.deleteAtt", atNo);
+	}
+	
+	public AttendanceTO getAttByAttNo(int attNo) {
+		return session.selectOne("mapper-att.getAttByAttNo", attNo);
+	}
+	
+	public List<AttendanceTO> getAttListByPartyOwner(int userNo) {
+	    return session.selectList("mapper-att.getAttListByPartyOwner", userNo);
+	}
+	
+	public int updateAttStatus(int attNo, String status) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("attNo", attNo);
+		params.put("status", status);
+		return session.update("mapper-att.updateAttStatus",params);
 	}
 
 }

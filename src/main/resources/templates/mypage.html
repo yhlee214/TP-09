@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<meta charset="UTF-8">
+<title>마이페이지</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="page_mypage">
+
+<a th:href="@{/main}" class="page_button">
+    <img th:src="@{/images/logo2.png}" alt="동네공구" class="button_img">
+</a>
+
+<div class="my_page">
+<h1>마이페이지</h1>
+
+<!-- 1. 내가 쓴 공구 -->
+<div class="my_section">
+    <h3>내가 쓴 공구</h3>
+    <div class="my_item" th:each="p : ${myPartyList}">
+        <a th:href="@{/post/detail(partyNo=${p.partyNo})}" th:text="${p.partyTitle}">제목</a>
+        <span>[[${p.accumQty}]] / [[${p.targetQty}]]</span>
+        <span th:text="${p.partyStatus}">상태</span>
+    </div>
+    <p th:if="${myPartyList == null or myPartyList.isEmpty()}">작성한 공구가 없습니다.</p>
+</div>
+
+<!-- 2. 내가 쓴 댓글 -->
+<div class="my_section">
+    <h3>내가 쓴 댓글</h3>
+    <div class="my_item" th:each="r : ${myReplyList}">
+        <a th:href="@{/post/detail(partyNo=${r.partyNo})}" th:text="${r.replyContent}">내용</a>
+        <span th:text="${r.replyDateTime != null} ? ${#temporals.format(r.replyDateTime,'yyyy-MM-dd')} : ''">작성일</span>
+    </div>
+    <p th:if="${myReplyList == null or myReplyList.isEmpty()}">작성한 댓글이 없습니다.</p>
+</div>
+
+<!-- 3. 내가 신청한 공구 -->
+<div class="my_section">
+    <h3>신청한 공구</h3>
+    <div class="my_item" th:each="a : ${myAttList}">
+        <a th:href="@{/post/detail(partyNo=${a.partyNo})}" th:text="${a.partyTitle}">글 제목</a>
+        <span>신청 수량 : <span th:text="${a.attQty}"></span></span>
+        <span th:text="${a.attDateTime != null} ? ${#temporals.format(a.attDateTime,'yyyy-MM-dd')} : ''">신청일</span>
+        <span th:text="${a.attStatus}">상태</span>
+
+        <form th:action="@{/apply/cancel}" method="post"
+              th:if="${a.attStatus == '대기'}"
+              onsubmit="return confirm('신청을 취소하시겠습니까?')">
+            <input type="hidden" name="attNo" th:value="${a.attNo}">
+            <button type="submit" class="btn_cancel">신청 취소</button>
+        </form>
+    </div>
+    <p th:if="${myAttList == null or myAttList.isEmpty()}">신청한 공구가 없습니다.</p>
+</div>
+
+<!-- 4. 내 공구에 들어온 신청 -->
+<div class="my_section">
+    <h3>내 공구에 들어온 신청</h3>
+    <div class="my_item" th:each="v : ${receivedList}">
+        <p><span th:text="${v.partyTitle}">글 제목</span></p>
+        <p>신청자 : <span th:text="${v.userName}">신청자</span></p>
+        <p>수량 : <span th:text="${v.attQty}">수량</span>개 ·
+           <span th:text="${v.attDateTime != null} ? ${#temporals.format(v.attDateTime,'yyyy-MM-dd')} : ''">신청일</span> ·
+           <span th:text="${v.attStatus}">상태</span></p>
+
+        <div th:if="${v.attStatus == '대기'}">
+            <form th:action="@{/apply/approve}" method="post" style="display:inline">
+                <input type="hidden" name="attNo" th:value="${v.attNo}">
+                <button type="submit" class="btn_approve">승인</button>
+            </form>
+            <form th:action="@{/apply/reject}" method="post" style="display:inline"
+                  onsubmit="return confirm('거절하시겠습니까?')">
+                <input type="hidden" name="attNo" th:value="${v.attNo}">
+                <button type="submit" class="btn_reject">거절</button>
+            </form>
+        </div>
+    </div>
+    <p th:if="${receivedList == null or receivedList.isEmpty()}">받은 신청이 없습니다.</p>
+</div>
+
+</div>
+</body>
+</html>

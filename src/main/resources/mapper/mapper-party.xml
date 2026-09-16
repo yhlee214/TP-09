@@ -3,37 +3,53 @@
 <mapper namespace="mapper-party">
 
 	<select id="getPartyListByUserNo" parameterType="int" resultType="lx.edu.gonggu.to.PartyTO">
-		select party_title, target_qty, split_datetime, product_name
+		select party_no, party_title, party_status, target_qty, split_datetime, product_name
 		from party
 		where user_no = #{userNo}
 	</select>
 	
-	<select id="getPartyList" resultType="lx.edu.gonggu.to.Party">
+	<select id="getPartyList" resultType="lx.edu.gonggu.to.PartyTO">
 		select * from party
 	</select>
 	
-	<select id="getPartyByPartyNo" parameterType="int" resultType="lx.edu.gonggu.to.Party">
+	<select id="getPartyByPartyNo" parameterType="int" resultType="lx.edu.gonggu.to.PartyTO">
 		select * from party
 		where party_no = #{partyNo}
 	</select>
 	
-	<insert id="createParty" parameterType="lx.edu.gonggu.to.Party">
+	<insert id="createParty" parameterType="lx.edu.gonggu.to.PartyTO">
 		insert into party(PARTY_TITLE, TARGET_QTY, SPLIT_DATETIME, SPLIT_ADDR
 					  ,SPLIT_PLACE, LONGITUDE, LATITUDE, PRODUCT_NAME
 					  , PRODUCT_CONTENT,PRODUCT_PRICE, PRODUCT_IMG
 					  , PARTY_ENDDATETIME, ACCUM_QTY, PARTY_STATUS
 					  , PARTY_DATETIME, RECENT_UPDATE, MAX_QTY, USER_NO
-					  , REGION_NO ) 
+					  , REGION_NO, USER_NAME) 
 		values (#{partyTitle}, #{targetQty}, #{splitDatetime}, #{splitAddr}
 					  , #{splitPlace}, #{longitude}, #{latitude}
-					  , #{longitude}, #{productName}, #{productContent}
+					  , #{productName}, #{productContent}
 					  , #{productPrice}, #{productImg}, #{partyEndDateTime}
-					  , #{accumQty}, "모집 중", #{partyDateTime}, #{recentUpdate}
-					  , #{maxQty}, #{userNo}, #{regionNo})
+					  , #{accumQty}, '모집 중', #{partyDateTime}, #{recentUpdate}
+					  , #{maxQty}, #{userNo}, #{regionNo}, #{userName})
 	</insert>
 	
 	<delete id="deleteParty" parameterType="int">
 		delete from party
 		where party_no = #{partyNo}
 	</delete>
+	<update id="increaseAccumQty">
+		update party
+		set accum_qty = accum_qty + #{qty}
+		where party_no = #{partyNo}
+	
+	</update>
+	
+	<!-- 누적수량이 목표수량에 도달하면 모집완료로 (PartyDAO.closePartyIfFull 이 호출) -->
+	<update id="closePartyIfFull" parameterType="int">
+		update party
+		set party_status = '모집완료'
+		where party_no = #{partyNo}
+		  and accum_qty >= target_qty
+		  and party_status != '모집완료'
+	</update>
+
 </mapper>

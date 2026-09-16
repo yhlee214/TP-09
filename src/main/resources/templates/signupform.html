@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<title>회 원 가 입</title>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="page_signup">
+
+<a th:href="@{/login}" class="page_button">
+    <img th:src="@{/images/logo2.png}" alt="동네공구" class="button_img">
+</a>
+
+<h1> 회 원 가 입 </h1>
+
+<form name="signupjoin" method="post" th:action="@{/signup}" id="signupjoin">
+
+<div>
+
+<h3>약관동의 </h3>
+
+<div>
+<textarea readonly >사람을 짜증나게 하는 방법은 두 가지가 있다. 하나는 말을 하다 마는 것이고 또 다른 하나는
+</textarea>
+
+예 <input type="checkbox" id="yes" name="agreeTerms" value="Y">
+</div>
+<div>
+<h3>개인 정보 이용 동의</h3>
+<textarea readonly >
+동의하시죠? 깔깔
+
+</textarea>
+예 <input type="checkbox" id="yes2" name="agreePrivacy" value="Y">
+
+</div>
+
+    <div>
+<div>
+	<span class="f_label">ID</span>
+    <input type="text" id="input_userId" name="userId" minlength="4" maxlength="12" placeholder="사용할 아이디 입력, 숫자와 영어 대소문자를 구별하여 구성해 주세요.">
+    <input type="button" id="dupcheck_Id" name="dupcheck_Id" value="중복확인">
+</div>
+<div>
+	<span class="f_label">PW</span>
+    <input type="password" id="input_userPw" name="userPw" minlength="6" maxlength="15" placeholder="사용할 비밀번호 입력, 6글자 이상, 숫자와 영어 대소문자로만 구성해 주세요.">
+</div>
+<div>
+	<span class="f_label">비밀번호 확인</span>
+    <input type="password" id="check_userPw" placeholder="위에 입력한 비밀번호를 입력해 주세요.">
+    <!-- 확인용이라 name 없음 = 서버로 안 감 -->
+</div>
+<div>
+	<span class="f_label">이름</span>
+    <input type="text" id="userName" name="userName" placeholder="ex : 홍길동">
+</div>
+<div>
+	<span class="f_label">전화번호</span>
+    <input type="text" id="userPhone" name="userPhone" placeholder="ex : 01012341234" minlength="10" maxlength="11">
+</div>
+
+<div>
+
+<div>
+<span class="f_label">우편번호</span>
+<input type="text" id="postcode" placeholder="우편번호" readonly>
+<!-- UsersTO 에 우편번호 필드가 없어서 name 없음 -->
+<input type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
+</div>
+<div>
+<span class="f_label">도로명주소</span>
+<input type="text" id="roadAddr" name="roadAddr" placeholder="도로명주소" readonly>
+</div>
+<div>
+<span class="f_label">지번주소</span>
+<input type="text" id="parcelAddr" name="parcelAddr" placeholder="지번주소" readonly>
+</div>
+<div>
+<span class="f_label">상세주소</span>
+<input type="text" id="detailAddr" placeholder="동/호수">
+</div>
+</div>
+
+
+</div>
+<div>
+
+<button type="submit" id="join_membership">회원등록</button>
+
+</div>
+
+</div>
+</form>
+<script type="text/javascript">
+
+ $('#signupjoin').submit(function(e) {
+    if(!$("#yes").is(":checked")){
+        alert("첫 약관에 동의하세요");
+        e.preventDefault()
+        return false
+    }
+    if(!$("#yes2").is(":checked")){
+        alert("개인정보 이용동의에 동의해 주세요");
+        e.preventDefault()
+        return false
+    }
+    if($("#userName").val().trim() == "") {
+        e.preventDefault()
+        alert("이름을 입력해 주세요")
+        return false
+    }
+    if(!/^01[0-9]{8,9}$/.test($("#userPhone").val())) {
+        alert("전화번호를 올바르게 입력해 주세요. (- 없이 숫자만)")
+        e.preventDefault()
+        return false
+    }
+    // 상세주소는 도로명주소 뒤에 붙여서 보냄
+    let detail = $("#detailAddr").val().trim();
+    if(detail !== "") {
+        $("#roadAddr").val($("#roadAddr").val() + " " + detail);
+    }
+
+    return true;
+ })
+
+
+$('#dupcheck_Id').click(function() {
+let input_Id = $("#input_userId").val()
+
+if(input_Id == "") {
+alert(`아이디를 입력해 주세요`)
+$("#input_userId").focus();
+return;
+
+}
+if(!/^[A-Za-z0-9]{4,12}$/.test(input_Id)) { //정규표현식 .test는 패턴에 맞는지 확인하는것.
+    alert("아이디가 조건에 맞지 않거나 너무 짧습니다. 다시 입력하세요.")
+    return
+}
+$.ajax({
+    type : "POST",                  // 
+    url : "/dupCheck",        // 백엔드와 맞출 것
+    data : {
+        id : input_Id
+    },
+    success : function(isDuplicate) { // 클라이언트에서 버튼 누르고 보냄 -> 컨트롤러에서 까보고 서비스로 보냄. 서비스에서 db랑 소통하여 있는지 확인 후 반대로 돌아옴
+        if(isDuplicate){
+            alert(`이미 아이디가 있어요`);
+            $("#input_userId").focus();
+            return
+        }
+        else {
+            alert("사용 가능한 아이디 입니다.");
+            return
+        }
+        },
+        error: function() {
+            alert("중복 확인 중 오류가 발생했어요.")
+            return
+        }
+})
+
+})
+
+$("#check_userPw").on('blur' , function() { //'blur , keyup 둘중에 하나 사용함 blur는 커서가 포커스가 벗어났을때 사용함.'
+
+    let pw1 = $("#input_userPw").val();
+    let pw2 = $("#check_userPw").val();
+
+if(pw1 == "" || pw2 == "") {
+ alert("비밀번호를 입력하세요")
+ return
+
+}
+
+if(!/^[A-Za-z0-9]{6,15}$/.test(pw1)) {
+    alert("비밀번호가 맞지 않습니다. 다시 입력하세요.")
+    return
+}
+
+if(pw1 === pw2)
+  {alert("좋은 비밀번호 입니다")
+  return
+} else {
+alert("비밀번호가 일치하지 않습니다")
+return
+}
+
+})
+
+
+function execDaumPostcode() {
+    new kakao.Postcode({
+        oncomplete: function(data) {
+            $("#postcode").val(data.zonecode);
+            $("#roadAddr").val(data.roadAddress);
+            $("#parcelAddr").val(data.jibunAddress);
+            $("#detailAddr").focus();
+        }
+    }).open();
+}
+
+</script>
+</body>
+</html>

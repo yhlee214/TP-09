@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=29b3650196f8fedd2d1e247efd58ae3f"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <meta charset="UTF-8">
+    <title>글 상세</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* 댓글 수정 폼 : 카드 안쪽에 들어가도록 (style.css 의 absolute 규칙을 덮어씀) */
+        .comment > div.reply_item form.reply_edit_form {
+            position: static;
+            display: block;
+            margin: 8px 0 0;
+        }
+        .comment > div.reply_item form.reply_edit_form textarea {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 52px;
+            height: 52px;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid var(--line);
+            resize: vertical;
+        }
+        .comment > div.reply_item form.reply_edit_form .reply_edit_actions {
+            position: static;
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            margin-top: 6px;
+        }
+        .comment > div.reply_item .reply_actions {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            display: flex;
+            gap: 6px;
+        }
+        .comment > div.reply_item .reply_actions form { position: static; }
+    </style>
+</head>
+
+<body class="page_detail">
+
+<a th:href="@{/main}" class="page_button">
+    <img th:src="@{/images/logo2.png}" alt="동네공구" class="button_img">
+</a>
+
+    <div class="post_detail">
+        <div class="post_detail_header">
+            <p th:text="${party.partyNo}">글 번호</p>
+            <h2 th:text="${party.partyTitle}">제목</h2>
+            <p><span th:text="${party.userName}">작성자</span>  ·  <span th:text="${party.partyDateTime != null} ? ${#temporals.format(party.partyDateTime,'yyyy-MM-dd')} : ''">작성일</span></p>
+
+            <div class="post_card_bottom">
+                <p th:text="${party.partyStatus}">상태</p>
+                <input type="button" id="editpost" name="editpost" value="수정"
+                    th:onclick="|location.href='@{/post/edit(partyNo=${party.partyNo})}'|">
+            </div>
+
+            <form th:action="@{/post/delete}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?')">
+                <input type="hidden" name="partyNo" th:value="${party.partyNo}">
+                <button type="submit">삭제</button>
+            </form>
+
+        </div>
+
+        <div class="post_detail_content">
+        	<img th:if="${party.productImg != null}" th:src="@{${party.productImg}}" alt="상품 이미지">
+            <p> 물품명 : <span th:text="${party.productName}"></span></p>
+            <p> 개당 가격 : <span th:text="${party.productPrice}"></span></p>
+            <p> 모집 현황 : <span>[[${party.accumQty}]] / [[${party.targetQty}]]</span></p>
+            <p> 마감일 : <span th:text="${party.partyEndDateTime != null} ? ${#temporals.format(party.partyEndDateTime,'yyyy-MM-dd HH:mm')} : ''"></span></p>
+            <p> 나눔 일시 : <span th:text="${party.splitDatetime != null} ? ${#temporals.format(party.splitDatetime,'yyyy-MM-dd HH:mm')} : ''"></span></p>
+            <p> 1인당 최대 구매 수량 : <span th:text="${party.maxQty}"></span></p>
+            <div th:text="${party.productContent}">기타 내용</div>
+        </div>
+
+        <div class="trade_place">
+            <p>거래 장소 : <span th:text="${party.splitPlace}"></span></p>
+            <p th:text="${party.splitAddr}">주소</p>
+            <input type="hidden" id="latitude" th:value="${party.latitude}">
+            <input type="hidden" id="longitude" th:value="${party.longitude}">
+            <div id="map" style="width:100%; height:350px;"></div>
+        </div>
+    </div>
+
+    <form id="applyform" method="post" th:action="@{/apply}">
+        <div class="applyform">
+            <input type="hidden" name="partyNo" th:value="${party.partyNo}">
+
+            <p>물품명 : <span th:text="${party.productName}"></span></p>
+            <p>개당 가격 : <span th:text="${party.productPrice}"></span></p>
+
+            <label for="attQty">구매 개수</label>
+            <input type="number" id="attQty" name="attQty" min="1" value="1"
+                th:max="${party.maxQty}">
+            <input type="hidden" id="unitPrice" th:value="${party.productPrice}">
+            <p> 총 금액 : <span id="totalprice">0</span></p>
+            <p> 신청자 : <span th:text="${session.loginUser.userName}">ㅇㅇㅇ</span></p>
+            <!-- 신청자는 화면에서 받지 않고 서버가 세션에서 꺼내 씀. 화면 값은 조작 가능하기 때문. -->
+        </div>
+        <button type="submit">신청하기</button>
+    </form>
+
+    <div class="comment">
+        <form th:action="@{/comment/write}" method="post">
+            <input type="hidden" name="partyNo" th:value="${party.partyNo}">
+            <textarea name="replyContent" placeholder="댓글을 입력하세요"></textarea>
+            <button type="submit">등록</button>
+        </form>
+
+        <p th:if="${replyList == null or replyList.isEmpty()}">첫 댓글을 남겨보세요.</p>
+
+        <div class="reply_item" th:each="r : ${replyList}">
+            <p><span th:text="${r.userName}">작성자</span> · <span th:text="${r.replyDateTime != null} ? ${#temporals.format(r.replyDateTime,'yyyy-MM-dd HH:mm')} : ''">작성일</span></p>
+            <p class="reply_text" th:text="${r.replyContent}">댓글 내용</p>
+
+            <!-- 댓글 수정 폼 : 기본 숨김, [수정] 누르면 나타남 -->
+            <form class="reply_edit_form" th:action="@{/comment/edit}" method="post" style="display:none">
+                <input type="hidden" name="replyNo" th:value="${r.replyNo}">
+                <input type="hidden" name="partyNo" th:value="${party.partyNo}">
+                <textarea name="replyContent" rows="2" th:text="${r.replyContent}"></textarea>
+                <div class="reply_edit_actions">
+                    <button type="submit">저장</button>
+                    <button type="button" class="reply_edit_cancel">취소</button>
+                </div>
+            </form>
+
+            <div class="reply_actions">
+                <button type="button" class="reply_edit_btn"
+                        th:if="${session.loginUser != null and session.loginUser.userNo == r.userNo}">수정</button>
+                <form th:action="@{/comment/delete}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?')">
+                    <input type="hidden" name="replyNo" th:value="${r.replyNo}">
+                    <input type="hidden" name="partyNo" th:value="${party.partyNo}">
+                    <button type="submit">삭제</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            // 댓글 수정 : 본문 감추고 수정 폼 보이기
+            $(document).on("click", ".reply_edit_btn", function () {
+                let box = $(this).closest(".reply_item");
+                box.find(".reply_text").hide();
+                box.find(".reply_actions").hide();
+                box.find(".reply_edit_form").show();
+            });
+            $(document).on("click", ".reply_edit_cancel", function () {
+                let box = $(this).closest(".reply_item");
+                box.find(".reply_edit_form").hide();
+                box.find(".reply_text").show();
+                box.find(".reply_actions").show();
+            });
+
+            let price = parseInt($("#unitPrice").val()) || 0; // 앞이 false면 뒤(0)를 price 에 넣음.
+
+            // 타임리프는 서버에서 한 번만 실행되므로 실시간 계산은 JS 가 함
+            $("#attQty").on("input", function () {
+                $("#totalprice").text((parseInt($(this).val()) || 0) * price);
+            }).trigger("input"); // 등록 직후 한 번 실행해서 초기값 표시
+
+            let map, marker;
+
+            let lat = parseFloat($("#latitude").val()) || 37.4954;
+            let lng = parseFloat($("#longitude").val()) || 126.8874;
+            let pos = new kakao.maps.LatLng(lat, lng); // LatLng 은 (위도, 경도) 순서
+
+            let mapContainer = document.getElementById('map');
+            map = new kakao.maps.Map(mapContainer, {
+                center: pos, // 저장된 거래 장소를 중앙에 표시
+                level: 4     // 숫자가 클수록 축소
+            });
+
+            marker = new kakao.maps.Marker({
+                position: pos,
+                map: map
+            });
+        });
+    </script>
+</body>
+
+</html>

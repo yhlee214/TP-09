@@ -13,4 +13,5 @@ public class ReplyTO {
 	private LocalDateTime replyDateTime;
 	private int partyNo;
 	private int userNo;
+	private String userName;
 }

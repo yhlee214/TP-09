@@ -28,6 +28,7 @@ public class PartyTO {
 	private int maxQty;
 	private int userNo;
 	private int regionNo;
+	private String userName;
 
 	
 }
