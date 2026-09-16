@@ -12,8 +12,8 @@ public class AttendanceTO {
 	private int attQty;
 	private LocalDateTime attDateTime;
 	private String attStatus;
+	private String partyTitle;
 	private int partyNo;
 	private int userNo;
 	private String userName;
-	private String partyTitle;
 }

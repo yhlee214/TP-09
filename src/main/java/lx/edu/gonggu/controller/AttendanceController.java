@@ -24,6 +24,7 @@ public class AttendanceController {
 	public String addAttendance(AttendanceTO attTo, HttpSession session) {
 		UsersTO loginUser = (UsersTO) session.getAttribute("loginUser");
 		attTo.setUserNo(loginUser.getUserNo());	
+		attTo.setUserName(loginUser.getUserName());
 		service.createAtt(attTo);
 		
 		return "redirect:/post/detail?partyNo="+attTo.getPartyNo();
@@ -35,7 +36,7 @@ public class AttendanceController {
 		
 		int partyNo = service.deleteAtt(attNo, loginUser.getUserNo());
 		
-		return "redirect:/post/detail?partyNo=" +partyNo;
+		return "redirect:/mypage";
 	}
 	
 	@PostMapping("/apply/approve")

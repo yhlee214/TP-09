@@ -52,6 +52,7 @@ public class PartyController {
 		partyTO.setRegionNo(loginUser.getRegionNo());	// 글 지역 = 작성자 동네 (폼의 동 선택 제거)
 		partyTO.setPartyDateTime(LocalDateTime.now());
 		partyTO.setRecentUpdate(LocalDateTime.now());
+		partyTO.setUserName(loginUser.getUserName());
 		ptService.createParty(partyTO);
 		
 		return "redirect:/list";
