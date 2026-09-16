@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lx.edu.gonggu.service.AttendanceService;
 import lx.edu.gonggu.service.MyPageService;
 import lx.edu.gonggu.service.PartyService;
+import lx.edu.gonggu.service.ReplyService;
 import lx.edu.gonggu.to.UsersTO;
 
 @Controller
@@ -17,6 +18,7 @@ public class MyPageController {
 	
 	private final PartyService ptService;
 	private final AttendanceService attService;
+	private final ReplyService replyService;
 	
 	@GetMapping("/mypage")
 	public String getMyPage(Model model, HttpSession session) {
@@ -26,6 +28,7 @@ public class MyPageController {
 		model.addAttribute("myPartyList", ptService.getPartyListByUserNo(userNo));
 		model.addAttribute("myAttList", attService.getAttListByUserNo(userNo));
 		model.addAttribute("receivedList", attService.getAttListByPartyOwner(userNo));
+		model.addAttribute("myReplyList", replyService.showReplyListByUserNo(userNo));
 		
 		return "/mypage";
 	}
