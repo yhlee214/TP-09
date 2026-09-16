@@ -63,5 +63,9 @@ public class ReplyService {
 	            throw new IllegalStateException("댓글 삭제에 실패했습니다.");
 	        }
 	}
-
+	
+	public List<ReplyTO> showReplyListByUserNo(int userNo) {
+		 return dao.getReplyListByUserNo(userNo);
+	}
+	
 }

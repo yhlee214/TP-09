@@ -33,5 +33,9 @@ public class ReplyDAO {
 	public ReplyTO getReplyByReplyNo(int replyNo) {
 	    return session.selectOne("mapper-reply.getReplyByReplyNo", replyNo);
 	}
-
+	
+	public List<ReplyTO> getReplyListByUserNo(int userNo) {
+		 return session.selectList("mapper-reply.getReplyListByUserNo", userNo);
+	}
+	
 }

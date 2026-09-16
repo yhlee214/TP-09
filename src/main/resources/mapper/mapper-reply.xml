@@ -32,4 +32,12 @@
     order by r.reply_datetime desc
 </select>
 
+<select id="getReplyListByUserNo" parameterType="int" resultType="lx.edu.gonggu.to.ReplyTO">
+	 select r.*, p.party_title as partyTitle
+    from reply r
+    join party p on r.party_no = p.party_no
+    where r.user_no = #{userNo}
+    order by r.reply_datetime desc
+</select>
+
 </mapper>
